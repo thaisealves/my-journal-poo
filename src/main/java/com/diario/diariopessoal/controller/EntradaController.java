@@ -116,6 +116,7 @@ public class EntradaController {
             model.addAttribute("humores", Humor.values());
             model.addAttribute("tiposConteudo", TipoConteudo.values());
             model.addAttribute("categorias", todasCategorias);
+            model.addAttribute("isEdicao", false);
 
             // Para o título da página
             model.addAttribute("titulo", "Nova Entrada");
@@ -219,6 +220,9 @@ public class EntradaController {
                 throw new RuntimeException("Tipo de diário não suportado");
             }
 
+            // Incrementar o contador geral
+            ContadorEntradas.incrementarEntradas();
+
             // Salvar o diário atualizado
             diarioRepository.save(diario);
 
@@ -271,13 +275,13 @@ public class EntradaController {
 
             // Determinar se a entrada é enriquecida (para exibição adequada no template)
             boolean isEnriquecida = entrada instanceof EntradaEnriquecida;
-            
+
             model.addAttribute("diario", diario);
             model.addAttribute("entrada", entrada);
             model.addAttribute("nomeUsuario", usuario.getUsername());
             model.addAttribute("isPremium", diario instanceof DiarioPremium);
             model.addAttribute("isEnriquecida", isEnriquecida);
-            
+
             // Para entrada enriquecida, adicionar atributos específicos
             if (isEnriquecida) {
                 EntradaEnriquecida entradaEnriquecida = (EntradaEnriquecida) entrada;
@@ -325,6 +329,8 @@ public class EntradaController {
             } else {
                 throw new RuntimeException("Tipo de diário não suportado");
             }
+            // Decrementar o contador geral
+            ContadorEntradas.decrementarContador();
 
             // Salvar o diário atualizado
             diarioRepository.save(diario);
@@ -364,7 +370,7 @@ public class EntradaController {
 
             // Buscar entrada
             Entrada entrada = null;
-            
+
             if (diario instanceof DiarioTexto) {
                 entrada = ((DiarioTexto) diario).buscarEntradaPorId(entradaId);
             } else if (diario instanceof DiarioPremium) {
@@ -374,13 +380,13 @@ public class EntradaController {
             if (entrada == null) {
                 throw new RuntimeException("Entrada não encontrada");
             }
-            
+
             // Verificar se é entrada enriquecida
             boolean isEnriquecida = entrada instanceof EntradaEnriquecida;
-            
+
             // Buscar todas as categorias existentes
             List<Categoria> todasCategorias = categoriaRepository.findAll();
-            
+
             model.addAttribute("diario", diario);
             model.addAttribute("entrada", entrada);
             model.addAttribute("categorias", todasCategorias);
@@ -391,7 +397,7 @@ public class EntradaController {
             model.addAttribute("isEnriquecida", isEnriquecida);
             model.addAttribute("titulo", "Editar Entrada");
             model.addAttribute("isEdicao", true);
-            
+
             // Para entrada enriquecida, adicionar atributos específicos
             if (isEnriquecida) {
                 EntradaEnriquecida entradaEnriquecida = (EntradaEnriquecida) entrada;
@@ -441,7 +447,7 @@ public class EntradaController {
 
             // Buscar entrada a ser editada
             Entrada entrada = null;
-            
+
             if (diario instanceof DiarioTexto) {
                 entrada = ((DiarioTexto) diario).buscarEntradaPorId(entradaId);
             } else if (diario instanceof DiarioPremium) {
@@ -459,8 +465,16 @@ public class EntradaController {
                 Optional<Categoria> categoriaExistente = categoriaRepository.findByNome(categoriaNome.trim());
 
                 if (categoriaExistente.isPresent()) {
-                    // Se a categoria já existir, use-a
+                    // Categoria existe - IMPORTANTE: Atualizar a cor se for diferente
                     categoria = categoriaExistente.get();
+
+                    // Verificar se a cor é diferente e atualizar se necessário
+                    if (corCategoria != null && !corCategoria.equals(categoria.getCor())) {
+                        System.out.println("Atualizando cor da categoria: " + categoria.getNome() +
+                                " de " + categoria.getCor() + " para " + corCategoria);
+                        categoria.setCor(corCategoria);
+                        categoria = categoriaRepository.save(categoria); // Salvar a atualização
+                    }
                 } else {
                     // Se não existir, crie uma nova com os parâmetros fornecidos
                     String descricao = (descricaoCategoria != null && !descricaoCategoria.trim().isEmpty())
@@ -484,16 +498,16 @@ public class EntradaController {
             entrada.setConteudo(conteudo);
             entrada.setCategoria(categoria);
             entrada.setHumor(humor);
-            
+
             // Se for entrada enriquecida, atualizar campos específicos
             if (entrada instanceof EntradaEnriquecida && tipoConteudo != null) {
                 EntradaEnriquecida entradaEnriquecida = (EntradaEnriquecida) entrada;
-                
+
                 // Para conteúdo não-texto, a URL é obrigatória
                 if (!TipoConteudo.TEXTO.equals(tipoConteudo) && (urlConteudo == null || urlConteudo.trim().isEmpty())) {
                     throw new RuntimeException("URL do conteúdo é obrigatória para entradas multimídia");
                 }
-                
+
                 entradaEnriquecida.setTipoConteudo(tipoConteudo);
                 entradaEnriquecida.setUrlConteudo(urlConteudo);
             }

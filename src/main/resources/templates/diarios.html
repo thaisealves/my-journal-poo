@@ -59,6 +59,17 @@
         <span th:text="${mensagem}">Operação realizada com sucesso</span>
       </div>
 
+      <!-- Na página de listagem de diários (diarios.html) -->
+      <div class="alert alert-info mb-4">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+          <div>
+            <strong>Total de Entradas:</strong> 
+            <span class="badge bg-primary" th:text="${T(com.diario.diariopessoal.model.entity.ContadorEntradas).getTotalEntradas()}">0</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Lista de diários dinâmica -->
       <div class="row" th:if="${diarios != null && !diarios.empty}">
         <div class="col-md-4 mb-4" th:each="diario : ${diarios}">

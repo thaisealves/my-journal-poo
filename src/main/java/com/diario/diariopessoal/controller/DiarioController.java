@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.diario.diariopessoal.model.entity.ContadorEntradas;
 import com.diario.diariopessoal.model.entity.DiarioBase;
 import com.diario.diariopessoal.model.entity.DiarioFactory;
 import com.diario.diariopessoal.model.entity.DiarioPremium;
@@ -38,34 +39,23 @@ public class DiarioController {
     @GetMapping
     public String listarDiarios(Model model) {
         try {
-            // Obter o usuário autenticado
+            // Obter usuário autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
-
-            // Buscar usuário no banco de dados
-            Usuario usuario = usuarioRepository.findByUsername(username)
+            Usuario usuario = usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
+            
             // Buscar diários do usuário
             List<DiarioBase> diarios = diarioRepository.findByUsuarioId(usuario.getId());
-
+            
+            // Adicionar contador de entradas ao modelo
+            model.addAttribute("totalEntradas", ContadorEntradas.getTotalEntradas());
             model.addAttribute("diarios", diarios);
-            model.addAttribute("nomeUsuario", username);
-            model.addAttribute("titulo", "Meus Diários");
-
+            model.addAttribute("nomeUsuario", usuario.getUsername());
+            
             return "diarios";
-
         } catch (Exception e) {
-            // Log do erro
-            System.err.println("Erro ao listar diários: " + e.getMessage());
-            e.printStackTrace();
-
-            // Adicionar mensagem de erro
-            model.addAttribute("erro", "Não foi possível carregar seus diários: " + e.getMessage());
-            model.addAttribute("nomeUsuario", "Usuário");
-            model.addAttribute("titulo", "Meus Diários");
-
-            return "diarios";
+            model.addAttribute("erro", "Erro ao listar diários: " + e.getMessage());
+            return "redirect:/";
         }
     }
 

@@ -43,7 +43,6 @@ public class Entrada extends EntidadeBase {
     private Humor humor;
 
     public Entrada() {
-        ContadorEntradas.incrementarEntradas();
     }
 
     public Entrada(String titulo, String conteudo, Usuario autor) {
@@ -51,7 +50,6 @@ public class Entrada extends EntidadeBase {
         this.conteudo = conteudo;
         this.autor = autor;
         this.categoria = Categoria.criarCategoriaPadrao();
-        ContadorEntradas.incrementarEntradas();
     }
 
     public Entrada(String titulo, String conteudo, Categoria categoria, Usuario autor) {
@@ -59,7 +57,6 @@ public class Entrada extends EntidadeBase {
         this.conteudo = conteudo;
         this.categoria = categoria;
         this.autor = autor;
-        ContadorEntradas.incrementarEntradas();
     }
 
     public String getConteudo() {

@@ -13,8 +13,10 @@ public class ContadorEntradas {
         totalEntradas++;
     }
 
-    public static int obterTotal() {
-        return totalEntradas;
+    public static void decrementarContador() {
+        if (totalEntradas > 0) {
+            totalEntradas--;
+        }
     }
 
     public static void resetar() {
