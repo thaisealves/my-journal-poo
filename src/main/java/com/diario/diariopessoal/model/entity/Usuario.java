@@ -3,7 +3,6 @@ package com.diario.diariopessoal.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.diario.diariopessoal.model.enums.PerfilUsuario;
 import com.diario.diariopessoal.model.interfaces.IDiario;
 
@@ -25,7 +24,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario extends EntidadeBase {
-//encapsulamento: atributos com getters e setters, privados
+    // encapsulamento: atributos com getters e setters, privados
     @NotBlank
     @Size(min = 3, max = 50)
     @Column(nullable = false, unique = true, length = 50)
@@ -38,12 +37,13 @@ public class Usuario extends EntidadeBase {
 
     @NotBlank
     @Column(nullable = false)
-    private String senha;  //guardando hash da senha
+    private String senha; // guardando hash da senha
 
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil", nullable = false)
     private PerfilUsuario perfil;
 
+    // uso de coleção List e ArrayList
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = DiarioBase.class)
     private List<IDiario> diarios = new ArrayList<>();
 
@@ -83,6 +83,8 @@ public class Usuario extends EntidadeBase {
         this.perfil = perfil;
     }
 
+    // utilização de polimorfismo na interface IDiario, diferentes implementações de
+    // IDiario podem ser usadas aq
     public void adicionarDiario(IDiario diario) {
         if (diario != null) {
             diarios.add(diario);

@@ -7,7 +7,7 @@ import java.util.Map;
 
 //uso de classe generica
 public class GerenciadorDiarios<T extends DiarioBase> {
-    private Map<String, T> diarios = new HashMap<>(); //usando coleção generica
+    private Map<String, T> diarios = new HashMap<>(); //usando coleção 
 
     // usando parametros genericos
     public void adicionarDiario(String nome, T diario) {

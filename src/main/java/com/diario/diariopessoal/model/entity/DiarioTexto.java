@@ -13,13 +13,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
+//uso de herança com diario base
 @Entity
 @Table(name = "diario_texto")
 public class DiarioTexto extends DiarioBase implements DiarioService {
     
+    //agregação de entradas
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "diario_id")
-    private List<Entrada> entradas = new ArrayList<>(); // composição
+    private List<Entrada> entradas = new ArrayList<>();
 
     // construtores
     public DiarioTexto() {

@@ -2,7 +2,7 @@ package com.diario.diariopessoal.model.entity;
 
 //classe para criação de diários diferentes
 public class DiarioFactory {
-
+    // utilização de métodos estaticos
     // criação de diario com descrição padrao
     public static DiarioTexto criarDiarioTexto(Usuario usuario) {
         // instanciação de classe

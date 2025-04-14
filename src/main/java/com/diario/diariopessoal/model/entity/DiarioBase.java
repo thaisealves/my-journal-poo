@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+//usando classe abstrata
 @Entity
 @Table(name = "diario")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -34,6 +35,8 @@ public abstract class DiarioBase implements IDiario {
     @Column(length = 500)
     protected String descricao;
 
+    // Associação com Usuario
+    // o diario é de um usuario, mas o usuario pode ter varios diarios
     @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)

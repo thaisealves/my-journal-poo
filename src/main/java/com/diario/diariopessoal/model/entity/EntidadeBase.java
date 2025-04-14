@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
+//implementação de interface
 @MappedSuperclass // anotação que indica que esta classe é uma superclasse mapeada, usando campos
                   // comuns para as subclasses
 // classe abstrata que representa uma entidade base para o sistema

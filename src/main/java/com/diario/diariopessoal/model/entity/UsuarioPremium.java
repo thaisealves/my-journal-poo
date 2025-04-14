@@ -13,6 +13,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 
+//generalização e especialização - herança de usuario, especialização
 @Entity
 @Table(name = "usuario_premium")
 public class UsuarioPremium extends Usuario {

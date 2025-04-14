@@ -48,6 +48,8 @@ public class DiarioPremium extends DiarioBase implements DiarioService {
         entradasEnriquecidas.add(entrada);
     }
 
+    // sobrescrita de adicionarEntrada
+    // polimorfismo e sobrecarga de métodos (adicionar entrada)
     @Override
     public void adicionarEntrada(String conteudo) {
         EntradaEnriquecida entrada = new EntradaEnriquecida(
@@ -90,6 +92,8 @@ public class DiarioPremium extends DiarioBase implements DiarioService {
         return null;
     }
 
+    // polimorfismo verificação de tipo de usuário, dependendo de qual é o usuario
+    // pode ou nao criar o diario premium
     @Override
     public void setUsuario(Usuario usuario) {
         if (!(usuario instanceof UsuarioPremium)) {
