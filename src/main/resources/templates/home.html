@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo}">Diário Pessoal</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .home-container {
+            max-width: 900px;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        
+        .btn-lg {
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+        }
+        
+        .welcome-text {
+            margin-bottom: 50px;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #6c63ff;
+        }
+        
+        .feature-box {
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container home-container">
+        <div class="row mb-5 text-center welcome-text">
+            <div class="col">
+                <h1 class="display-4">Bem-vindo ao Diário Pessoal</h1>
+                <p class="lead">Registre seus pensamentos, memórias e momentos importantes em um diário digital seguro e organizado.</p>
+            </div>
+        </div>
+        
+        <div class="row mb-5">
+            <div class="col-md-4 text-center feature-box">
+                <div class="feature-icon">📝</div>
+                <h3>Registre suas memórias</h3>
+                <p>Crie entradas para registrar seus pensamentos e experiências diárias.</p>
+            </div>
+            <div class="col-md-4 text-center feature-box">
+                <div class="feature-icon">🔍</div>
+                <h3>Organize e encontre</h3>
+                <p>Categorize suas entradas e filtre-as facilmente quando precisar.</p>
+            </div>
+            <div class="col-md-4 text-center feature-box">
+                <div class="feature-icon">🔒</div>
+                <h3>Privacidade</h3>
+                <p>Seus pensamentos permanecem privados e seguros, só você tem acesso.</p>
+            </div>
+        </div>
+        
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8 text-center">
+                <p class="lead mb-4">Comece sua jornada de autodescoberta hoje mesmo!</p>
+                
+                <div class="d-grid gap-4 d-md-flex justify-content-md-center">
+                    <a th:href="@{/usuarios/cadastro}" class="btn btn-primary btn-lg px-5">Cadastre-se</a>
+                    <a th:href="@{/login}" class="btn btn-outline-primary btn-lg px-5">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

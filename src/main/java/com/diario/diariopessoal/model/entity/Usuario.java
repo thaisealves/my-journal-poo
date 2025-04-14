@@ -3,7 +3,9 @@ package com.diario.diariopessoal.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.diario.diariopessoal.model.enums.PerfilUsuario;
+import com.diario.diariopessoal.model.interfaces.IDiario;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -23,27 +25,27 @@ import jakarta.validation.constraints.Size;
 @Table(name = "usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario extends EntidadeBase {
-    
+//encapsulamento: atributos com getters e setters, privados
     @NotBlank
     @Size(min = 3, max = 50)
     @Column(nullable = false, unique = true, length = 50)
     private String username;
-    
+
     @NotBlank
     @Email
     @Column(nullable = false, unique = true)
     private String email;
-    
+
     @NotBlank
     @Column(nullable = false)
-    private String senha;
-    
+    private String senha;  //guardando hash da senha
+
     @Enumerated(EnumType.STRING)
     @Column(name = "perfil", nullable = false)
     private PerfilUsuario perfil;
-    
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<DiarioBase> diarios = new ArrayList<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = DiarioBase.class)
+    private List<IDiario> diarios = new ArrayList<>();
 
     // Construtor
     // sobrecarga de construtores, um com parâmetros e outro vazio, polimorfismo
@@ -57,7 +59,6 @@ public class Usuario extends EntidadeBase {
     public Usuario() {
     }
 
-
     public String getUsername() {
         return username;
     }
@@ -69,34 +70,32 @@ public class Usuario extends EntidadeBase {
     public PerfilUsuario getPerfil() {
         return perfil;
     }
-    
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senhaCriptografada) {
+        this.senha = senhaCriptografada;
+    }
+
     public void setPerfil(PerfilUsuario perfil) {
         this.perfil = perfil;
     }
-    public void adicionarDiarios(DiarioBase diario) {
+
+    public void adicionarDiario(IDiario diario) {
         if (diario != null) {
             diarios.add(diario);
             diario.setUsuario(this);
         }
     }
 
-    public List<DiarioBase> getDiarios() {
+    public List<IDiario> getDiarios() {
         return diarios;
     }
-    public boolean verificarSenha(String senhaInformada) {
-        // verificando a validade da senha comparando com a senha informada
-        return senha.equals(senhaInformada);
-    }
 
-    public boolean alterarSenha(String senhaAntiga, String novaSenha) {
-        if (!verificarSenha(senhaAntiga)) {
-            return false;
-        }
-        if (novaSenha == null || novaSenha.length() < 6) {
-            return false;
-        }
-        this.senha = novaSenha;
-        return true;
+    public void alterarSenha(String novaSenhaCriptografada) {
+        this.senha = novaSenhaCriptografada;
     }
 
     // utilização de sobrescrita

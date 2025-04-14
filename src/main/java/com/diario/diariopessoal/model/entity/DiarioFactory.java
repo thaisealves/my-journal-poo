@@ -5,6 +5,7 @@ public class DiarioFactory {
 
     // criação de diario com descrição padrao
     public static DiarioTexto criarDiarioTexto(Usuario usuario) {
+        // instanciação de classe
         return new DiarioTexto("Meu Diário", "Um lugar para registrar meus pensamentos", usuario);
     }
 
@@ -12,14 +13,14 @@ public class DiarioFactory {
     public static DiarioTexto criarDiarioTexto(String nome, String descricao, Usuario usuario) {
         return new DiarioTexto(nome, descricao, usuario);
     }
-    
+
     public static DiarioPremium criarDiarioPremium(Usuario usuario) {
         if (!(usuario instanceof UsuarioPremium)) {
             throw new IllegalArgumentException("Apenas usuários premium podem criar diários premium");
         }
         return new DiarioPremium("Meu Diário Premium", "Registre suas memórias com recursos exclusivos", usuario);
     }
-    
+
     public static DiarioPremium criarDiarioPremium(String nome, String descricao, Usuario usuario) {
         if (!(usuario instanceof UsuarioPremium)) {
             throw new IllegalArgumentException("Apenas usuários premium podem criar diários premium");
