@@ -13,7 +13,7 @@ public class ContadorEntradas {
         totalEntradas++;
     }
 
-    public int obterTotal() {
+    public static int obterTotal() {
         return totalEntradas;
     }
 

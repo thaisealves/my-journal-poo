@@ -3,20 +3,23 @@ package com.diario.diariopessoal.model.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.diario.diariopessoal.model.enums.Humor;
 import com.diario.diariopessoal.model.interfaces.DiarioService;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "diario_texto")
 public class DiarioTexto extends DiarioBase implements DiarioService {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Entrada> entradas = new ArrayList<>();
-
-    @Column(name = "user", nullable = false)
-    private Usuario usuario;
+    
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "diario_id")
+    private List<Entrada> entradas = new ArrayList<>(); // composição
 
     // construtores
     public DiarioTexto() {
@@ -25,26 +28,32 @@ public class DiarioTexto extends DiarioBase implements DiarioService {
 
     public DiarioTexto(String nome, String descricao, Usuario usuario) {
         super(nome, descricao, usuario);
-        this.usuario = usuario;
-    }
-
-    public List<Entrada> listarEntradas() {
-        return entradas;
     }
 
     // métodos
     @Override
-    // polimorfismo e sobrecarga de métodos
-    // sobrescrita de metodos de DiarioBase
+    // polimorfismo e sobrecarga de métodos (adicionar entrada)
+    // sobrescrita de metodos de DiarioBase e DiarioService
     public void adicionarEntrada(String conteudo) {
-        Entrada entrada = new Entrada(conteudo, Categoria.criarCategoriaPadrao(), usuario);
+        Entrada entrada = new Entrada(conteudo, Categoria.criarCategoriaPadrao(), getUsuario());
         entradas.add(entrada);
 
     }
 
     public void adicionarEntrada(String conteudo, Categoria categoria) {
-        Entrada entrada = new Entrada(conteudo, categoria, usuario);
+        Entrada entrada = new Entrada(conteudo, categoria, getUsuario());
         entradas.add(entrada);
+    }
+
+    public void adicionarEntrada(String conteudo, Categoria categoria, Humor humor) {
+        Entrada entrada = new Entrada(conteudo, categoria, getUsuario());
+        entrada.setHumor(humor);
+        entradas.add(entrada);
+    }
+
+    @Override
+    public List<Entrada> listarEntradas() {
+        return entradas;
     }
 
     @Override

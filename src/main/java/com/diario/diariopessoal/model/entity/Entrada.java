@@ -6,27 +6,47 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "entrada")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Entrada extends EntidadeBase {
-    @Column(nullable = false, length = 10000)
+    @NotBlank
+    @Lob
+    @Column(nullable = false)
     private String conteudo;
 
     // agregação de categoria
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "humor")
     private Humor humor;
 
     public Entrada() {
+        ContadorEntradas.incrementarEntradas();
+    }
+
+    public Entrada(String conteudo, Usuario autor) {
+        this.conteudo = conteudo;
+        this.autor = autor;
+        this.categoria = Categoria.criarCategoriaPadrao();
         ContadorEntradas.incrementarEntradas();
     }
 
@@ -63,6 +83,10 @@ public class Entrada extends EntidadeBase {
 
     public void setHumor(Humor humor) {
         this.humor = humor;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     @Override

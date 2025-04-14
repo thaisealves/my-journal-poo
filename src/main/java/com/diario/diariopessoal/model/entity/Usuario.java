@@ -10,29 +10,40 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
-@Inheritance(strategy = jakarta.persistence.InheritanceType.JOINED)
+@Table(name = "usuario")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Usuario extends EntidadeBase {
-
-    @Column(nullable = false, unique = true)
+    
+    @NotBlank
+    @Size(min = 3, max = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
-
+    
+    @NotBlank
+    @Email
     @Column(nullable = false, unique = true)
     private String email;
-
+    
+    @NotBlank
     @Column(nullable = false)
     private String senha;
-
-    // cascade: ir excluindo me cascata
-    // usuario possui um (ou mais) diario base, relação de agregação
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<DiarioBase> diarios = new ArrayList<>();
-
+    
     @Enumerated(EnumType.STRING)
+    @Column(name = "perfil", nullable = false)
     private PerfilUsuario perfil;
+    
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<DiarioBase> diarios = new ArrayList<>();
 
     // Construtor
     // sobrecarga de construtores, um com parâmetros e outro vazio, polimorfismo
@@ -58,15 +69,20 @@ public class Usuario extends EntidadeBase {
     public PerfilUsuario getPerfil() {
         return perfil;
     }
+    
     public void setPerfil(PerfilUsuario perfil) {
         this.perfil = perfil;
     }
     public void adicionarDiarios(DiarioBase diario) {
         if (diario != null) {
             diarios.add(diario);
+            diario.setUsuario(this);
         }
     }
 
+    public List<DiarioBase> getDiarios() {
+        return diarios;
+    }
     public boolean verificarSenha(String senhaInformada) {
         // verificando a validade da senha comparando com a senha informada
         return senha.equals(senhaInformada);

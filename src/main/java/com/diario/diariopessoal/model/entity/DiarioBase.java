@@ -1,16 +1,36 @@
 package com.diario.diariopessoal.model.entity;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
-//uso de classe abstrata
 @MappedSuperclass
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class DiarioBase {
-    protected String nome; // utilização de encapsulamento
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @NotBlank
+    @Size(min = 1, max = 100)
+    @Column(nullable = false, length = 100)
+    protected String nome;
+    
+    @Size(max = 500)
+    @Column(length = 500)
     protected String descricao;
 
-    // associação de um diário com um usuário
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     protected Usuario usuario;
@@ -51,5 +71,13 @@ public abstract class DiarioBase {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Long getId() {
+        return id;
+    }
+    
+    protected void setId(Long id) {
+        this.id = id;
     }
 }
