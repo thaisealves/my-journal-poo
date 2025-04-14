@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${entrada.titulo != null && !entrada.titulo.isEmpty() ? entrada.titulo : 'Entrada sem título'}">Visualizar Entrada</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .entrada-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 30px 0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .categoria-badge {
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .content-container {
+            white-space: pre-line;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .media-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .media-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        /* Cores diferentes para cada humor */
+        .humor-feliz { background-color: #28a745 !important; }
+        .humor-triste { background-color: #6c757d !important; }
+        .humor-neutro { background-color: #17a2b8 !important; }
+        .humor-inspirado { background-color: #ffc107 !important; color: #212529 !important; }
+        .humor-ansioso { background-color: #dc3545 !important; }
+        .humor-irritado { background-color: #fd7e14 !important; }
+        .humor-grato { background-color: #20c997 !important; }
+        .btn-floating {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/diarios}">Diário Pessoal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/diarios}">Meus Diários</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text me-3 text-light">
+                        Olá, <span th:text="${nomeUsuario}">Usuário</span>!
+                    </span>
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-outline-light">Sair</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Mensagens de feedback -->
+        <div class="alert alert-success" th:if="${mensagem}" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${mensagem}">Operação realizada com sucesso</span>
+        </div>
+
+        <div class="alert alert-danger" th:if="${erro}" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${erro}">Erro ao carregar entrada</span>
+        </div>
+        
+        <!-- Cabeçalho da entrada -->
+        <div class="entrada-header text-center text-md-start px-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-5 fw-bold" th:text="${entrada.titulo != null && !entrada.titulo.isEmpty() ? entrada.titulo : 'Entrada sem título'}">
+                        Título da Entrada
+                    </h1>
+                    <div class="d-flex flex-wrap align-items-center mt-3">
+                        <!-- Data da entrada -->
+                        <span class="me-3 text-white-50">
+                            <i class="bi bi-calendar me-1"></i>
+                            <span th:text="${entrada.dataCriacao != null ? 
+                                #temporals.format(entrada.dataCriacao, 'dd/MM/yyyy HH:mm') : 
+                                (entrada.dataHora != null ? #temporals.format(entrada.dataHora, 'dd/MM/yyyy HH:mm') : 'Data não disponível')}">
+                                01/01/2025 12:00
+                            </span>
+                        </span>
+                        <!-- Badge de humor com emoji -->
+                        <span th:if="${entrada.humor != null}" 
+                              th:class="${'badge me-2 ' + 
+                                      (entrada.humor.name() == 'FELIZ' ? 'humor-feliz' : 
+                                      entrada.humor.name() == 'TRISTE' ? 'humor-triste' : 
+                                      entrada.humor.name() == 'NEUTRO' ? 'humor-neutro' :
+                                      entrada.humor.name() == 'IRRITADO' ? 'humor-irritado' :
+                                      entrada.humor.name() == 'ANSIOSO' ? 'humor-ansioso' :
+                                      entrada.humor.name() == 'GRATO' ? 'humor-grato' :
+                                      entrada.humor.name() == 'INSPIRADO' ? 'humor-inspirado' : 'bg-secondary')}">
+                            <span th:text="${entrada.humor}">Humor</span>
+                            <span class="ms-1" th:text="${
+                                entrada.humor.name() == 'FELIZ' ? '😊' : 
+                                entrada.humor.name() == 'TRISTE' ? '😢' : 
+                                entrada.humor.name() == 'NEUTRO' ? '😐' :
+                                entrada.humor.name() == 'IRRITADO' ? '😠' :
+                                entrada.humor.name() == 'ANSIOSO' ? '😰' :
+                                entrada.humor.name() == 'GRATO' ? '😌' :
+                                entrada.humor.name() == 'INSPIRADO' ? '🤩' : ''
+                            }"></span>
+                        </span>
+                        <!-- Badge de categoria -->
+                        <span class="categoria-badge" th:if="${entrada.categoria != null}"
+                              th:style="'background-color: ' + ${entrada.categoria.cor} + '; color: #fff;'"
+                              th:text="${entrada.categoria.nome}">Categoria</span>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+                    <div class="btn-group">
+                        <a th:href="@{/diarios/{diarioId}/entradas/{entradaId}/editar(diarioId=${diario.id},entradaId=${entrada.id})}" 
+                           class="btn btn-light">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a th:href="@{/diarios/{diarioId}/entradas/{entradaId}/excluir(diarioId=${diario.id},entradaId=${entrada.id})}"
+                           onclick="return confirm('Tem certeza que deseja excluir esta entrada?')"
+                           class="btn btn-outline-light">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card com o conteúdo da entrada -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <!-- Conteúdo multimídia para entradas enriquecidas -->
+                <div class="media-container" th:if="${isEnriquecida}">
+                    <!-- Imagem -->
+                    <div th:if="${tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).IMAGEM}">
+                        <img th:src="${urlConteudo}" alt="Imagem" class="img-fluid">
+                    </div>
+                    
+                    <!-- Vídeo -->
+                    <div th:if="${tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).VIDEO}" class="ratio ratio-16x9">
+                        <iframe th:src="${urlConteudo}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen></iframe>
+                    </div>
+                    
+                    <!-- Áudio -->
+                    <div th:if="${tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).AUDIO}">
+                        <audio controls class="w-100">
+                            <source th:src="${urlConteudo}" type="audio/mpeg">
+                            Seu navegador não suporta o elemento de áudio.
+                        </audio>
+                    </div>
+                    
+                    <!-- Link -->
+                    <div th:if="${tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).LINK}" class="alert alert-info">
+                        <i class="bi bi-link-45deg"></i> 
+                        <a th:href="${urlConteudo}" target="_blank" th:text="${urlConteudo}">Link</a>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo textual -->
+                <div class="content-container mt-4" th:text="${entrada.conteudo}">
+                    Conteúdo da entrada...
+                </div>
+            </div>
+        </div>
+        
+        <!-- Informações da categoria -->
+        <div class="card mb-4" th:if="${entrada.categoria != null && entrada.categoria.descricao != null && !entrada.categoria.descricao.isEmpty()}">
+            <div class="card-header" th:style="'background-color: ' + ${entrada.categoria.cor} + '; color: #fff;'">
+                <h5 class="mb-0"><i class="bi bi-tag me-2"></i> <span th:text="${entrada.categoria.nome}">Nome da Categoria</span></h5>
+            </div>
+            <div class="card-body">
+                <p th:text="${entrada.categoria.descricao}">Descrição da categoria...</p>
+            </div>
+        </div>
+        
+        <!-- Navegação entre entradas -->
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/diarios/{id}/entradas(id=${diario.id})}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left"></i> Voltar para Entradas
+            </a>
+        </div>
+    </div>
+    
+    <!-- Botão flutuante para editar -->
+    <a th:href="@{/diarios/{diarioId}/entradas/{entradaId}/editar(diarioId=${diario.id},entradaId=${entrada.id})}" 
+       class="btn btn-primary btn-floating">
+        <i class="bi bi-pencil"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

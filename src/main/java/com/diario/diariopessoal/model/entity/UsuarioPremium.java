@@ -17,7 +17,7 @@ import jakarta.validation.constraints.NotNull;
 @Entity
 @Table(name = "usuario_premium")
 public class UsuarioPremium extends Usuario {
-    
+
     @Column(name = "data_assinatura")
     private LocalDate dataAssinatura;
 
@@ -42,7 +42,6 @@ public class UsuarioPremium extends Usuario {
         return dataAssinatura;
     }
 
-    
     public int obterDiasRestantes() {
         LocalDate dataAtual = LocalDate.now();
         return (int) (dataAssinatura.plusMonths(plano.getDuracao()).toEpochDay() - dataAtual.toEpochDay());
@@ -70,23 +69,21 @@ public class UsuarioPremium extends Usuario {
         this.plano = novoPlano;
     }
 
-   
     public DiarioPremium criarDiarioPremium(String nome, String descricao) {
         DiarioPremium diario = new DiarioPremium(nome, descricao, this);
         super.getDiarios().add(diario);
         return diario;
     }
-    
-   
-    public EntradaEnriquecida criarEntradaEnriquecida(String conteudo, Categoria categoria, 
-                                                    TipoConteudo tipoConteudo, String urlConteudo) {
-        return new EntradaEnriquecida(conteudo, categoria, this, tipoConteudo, urlConteudo);
+
+    public EntradaEnriquecida criarEntradaEnriquecida(String titulo, String conteudo, Categoria categoria,
+            TipoConteudo tipoConteudo, String urlConteudo) {
+        return new EntradaEnriquecida(titulo, conteudo, categoria, this, tipoConteudo, urlConteudo);
     }
-    
 
     public void verificarAssinaturaAtiva() {
         if (!isAssinaturaAtiva()) {
-            throw new IllegalStateException("Sua assinatura premium expirou. Por favor, renove para continuar usando recursos premium.");
+            throw new IllegalStateException(
+                    "Sua assinatura premium expirou. Por favor, renove para continuar usando recursos premium.");
         }
     }
 

@@ -29,6 +29,10 @@ public class DiarioPremium extends DiarioBase implements DiarioService {
         super();
     }
 
+    public List<EntradaEnriquecida> getEntradasEnriquecidas() {
+        return entradasEnriquecidas;
+    }
+
     public DiarioPremium(String nome, String descricao, Usuario usuario) {
         super(nome, descricao, usuario);
 
@@ -51,8 +55,8 @@ public class DiarioPremium extends DiarioBase implements DiarioService {
     // sobrescrita de adicionarEntrada
     // polimorfismo e sobrecarga de métodos (adicionar entrada)
     @Override
-    public void adicionarEntrada(String conteudo) {
-        EntradaEnriquecida entrada = new EntradaEnriquecida(
+    public void adicionarEntrada(String titulo, String conteudo) {
+        EntradaEnriquecida entrada = new EntradaEnriquecida(titulo,
                 conteudo,
                 Categoria.criarCategoriaPadrao(),
                 getUsuario(),
@@ -61,9 +65,9 @@ public class DiarioPremium extends DiarioBase implements DiarioService {
         entradasEnriquecidas.add(entrada);
     }
 
-    public void adicionarEntrada(String conteudo, Categoria categoria,
+    public void adicionarEntrada(String titulo, String conteudo, Categoria categoria,
             TipoConteudo tipoConteudo, String urlConteudo) {
-        EntradaEnriquecida entrada = new EntradaEnriquecida(
+        EntradaEnriquecida entrada = new EntradaEnriquecida(titulo,
                 conteudo, categoria, getUsuario(), tipoConteudo, urlConteudo);
         entradasEnriquecidas.add(entrada);
     }

@@ -43,7 +43,7 @@ public abstract class DiarioBase implements IDiario {
     protected Usuario usuario;
 
     // uso de metodo abstrato
-    public abstract void adicionarEntrada(String conteudo);
+    public abstract void adicionarEntrada(String titulo, String conteudo);
 
     // construtores
     public DiarioBase() {

@@ -1,6 +1,7 @@
 package com.diario.diariopessoal.controller;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.diario.diariopessoal.model.entity.DiarioBase;
 import com.diario.diariopessoal.model.entity.DiarioFactory;
 import com.diario.diariopessoal.model.entity.DiarioPremium;
+import com.diario.diariopessoal.model.entity.DiarioTexto;
+import com.diario.diariopessoal.model.entity.Entrada;
 import com.diario.diariopessoal.model.entity.GerenciadorDiarios;
 import com.diario.diariopessoal.model.entity.Usuario;
 import com.diario.diariopessoal.model.entity.UsuarioPremium;
@@ -189,14 +192,11 @@ public class DiarioController {
         try {
             // Obter o usuário autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
-
-            // Buscar usuário no banco de dados
-            Usuario usuario = usuarioRepository.findByUsername(username)
+            Usuario usuario = usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-            // Buscar o diário
-            DiarioBase diario = diarioRepository.findById(id)
+            // Buscar o diário com entradas
+            DiarioBase diario = diarioRepository.findByIdWithEntradas(id)
                     .orElseThrow(() -> new RuntimeException("Diário não encontrado"));
 
             // Verificar se o diário pertence ao usuário
@@ -204,11 +204,30 @@ public class DiarioController {
                 throw new RuntimeException("Você não tem permissão para acessar este diário");
             }
 
-            model.addAttribute("diario", diario);
-            model.addAttribute("nomeUsuario", username);
-            model.addAttribute("isPremium", diario instanceof DiarioPremium);
+            // Lista para armazenar as entradas
+            List<Entrada> entradas;
 
-            return "visualizar-diario"; // Esta página precisará ser criada
+            // Buscar entradas com base no tipo de diário
+            if (diario instanceof DiarioTexto) {
+                DiarioTexto diarioTexto = (DiarioTexto) diario;
+                entradas = diarioTexto.getEntradas().stream()
+                        .sorted((e1, e2) -> e2.getDataCriacao().compareTo(e1.getDataCriacao()))
+                        .toList();
+            } else if (diario instanceof DiarioPremium) {
+                DiarioPremium diarioPremium = (DiarioPremium) diario;
+                entradas = new ArrayList<>(diarioPremium.getEntradasEnriquecidas().stream()
+                        .sorted((e1, e2) -> e2.getDataCriacao().compareTo(e1.getDataCriacao()))
+                        .toList());
+            } else {
+                entradas = new ArrayList<>();
+            }
+
+            model.addAttribute("diario", diario);
+            model.addAttribute("entradas", entradas);
+            model.addAttribute("isPremium", diario instanceof DiarioPremium);
+            model.addAttribute("nomeUsuario", usuario.getUsername());
+
+            return "visualizar-diario";
 
         } catch (Exception e) {
             model.addAttribute("erro", "Erro ao visualizar diário: " + e.getMessage());

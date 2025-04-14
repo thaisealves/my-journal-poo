@@ -17,8 +17,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "diario_texto")
 public class DiarioTexto extends DiarioBase implements DiarioService {
-    
-    //agregação de entradas
+
+    // agregação de entradas
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "diario_id")
     private List<Entrada> entradas = new ArrayList<>();
@@ -36,21 +36,25 @@ public class DiarioTexto extends DiarioBase implements DiarioService {
     @Override
     // polimorfismo e sobrecarga de métodos (adicionar entrada)
     // sobrescrita de metodos de DiarioBase e DiarioService
-    public void adicionarEntrada(String conteudo) {
-        Entrada entrada = new Entrada(conteudo, Categoria.criarCategoriaPadrao(), getUsuario());
+    public void adicionarEntrada(String titulo, String conteudo) {
+        Entrada entrada = new Entrada(titulo, conteudo, Categoria.criarCategoriaPadrao(), getUsuario());
         entradas.add(entrada);
 
     }
 
-    public void adicionarEntrada(String conteudo, Categoria categoria) {
-        Entrada entrada = new Entrada(conteudo, categoria, getUsuario());
+    public void adicionarEntrada(String titulo, String conteudo, Categoria categoria) {
+        Entrada entrada = new Entrada(titulo, conteudo, categoria, getUsuario());
         entradas.add(entrada);
     }
 
-    public void adicionarEntrada(String conteudo, Categoria categoria, Humor humor) {
-        Entrada entrada = new Entrada(conteudo, categoria, getUsuario());
+    public void adicionarEntrada(String titulo, String conteudo, Categoria categoria, Humor humor) {
+        Entrada entrada = new Entrada(titulo, conteudo, categoria, getUsuario());
         entrada.setHumor(humor);
         entradas.add(entrada);
+    }
+
+    public List<Entrada> getEntradas() {
+        return entradas;
     }
 
     @Override

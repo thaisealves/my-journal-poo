@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${diario.nome}">Visualizar Diário</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+      .header-diario {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        padding: 30px 0;
+        border-radius: 10px;
+        margin-bottom: 25px;
+      }
+      .categoria-badge {
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        font-weight: normal;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .entrada-card {
+        transition: all 0.3s ease;
+        border-left: 5px solid transparent;
+      }
+      .entrada-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transform: translateY(-3px);
+      }
+      .btn-floating {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        z-index: 100;
+      }
+      .btn-floating-secondary {
+        bottom: 100px;
+      }
+      .emoji-humor {
+        font-size: 1.2rem;
+        margin-left: 5px;
+      }
+      .card-text {
+        white-space: pre-line;
+      }
+      /* Cores diferentes para cada humor */
+      .humor-feliz {
+        background-color: #28a745 !important;
+      }
+      .humor-triste {
+        background-color: #6c757d !important;
+      }
+      .humor-neutro {
+        background-color: #17a2b8 !important;
+      }
+      .humor-inspirado {
+        background-color: #ffc107 !important;
+        color: #212529 !important;
+      }
+      .humor-ansioso {
+        background-color: #dc3545 !important;
+      }
+      .humor-irritado {
+        background-color: #fd7e14 !important;
+      }
+      .humor-grato {
+        background-color: #20c997 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" th:href="@{/diarios}">Diário Pessoal</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/diarios}">Meus Diários</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <span class="navbar-text me-3 text-light">
+              Olá, <span th:text="${nomeUsuario}">Usuário</span>!
+            </span>
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="btn btn-outline-light">Sair</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <!-- Cabeçalho do diário em destaque -->
+      <div class="header-diario text-center text-md-start px-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h1 class="display-4 fw-bold" th:text="${diario.nome}">
+              Nome do Diário
+            </h1>
+            <p
+              class="lead text-white-50"
+              th:if="${diario.descricao != null && !diario.descricao.isEmpty()}"
+              th:text="${diario.descricao}"
+            >
+              Descrição do diário
+            </p>
+            <div class="mt-3">
+              <span
+                class="badge bg-warning text-dark me-2 fs-6"
+                th:if="${isPremium}"
+                >Premium</span
+              >
+              <span
+                class="badge bg-light text-dark fs-6"
+                th:text="${entradas != null ? entradas.size() + ' entrada(s)' : '0 entradas'}"
+                >0 entradas</span
+              >
+            </div>
+          </div>
+          <div class="col-md-4 text-center text-md-end mt-3 mt-md-0">
+            <div class="btn-group">
+              <!-- Botão para ver todas as entradas na visualização em grade -->
+              <a
+                th:href="@{/diarios/{id}/entradas(id=${diario.id})}"
+                class="btn btn-light"
+              >
+                <i class="bi bi-grid-3x3-gap"></i> Ver em Grade
+              </a>
+              <!-- Botão para adicionar nova entrada -->
+              <a
+                th:href="@{/diarios/{id}/entradas/nova(id=${diario.id})}"
+                class="btn btn-success"
+              >
+                <i class="bi bi-plus-circle"></i> Nova Entrada
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensagens de feedback -->
+      <div class="alert alert-danger" th:if="${erro}" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${erro}">Erro ao carregar entradas</span>
+      </div>
+
+      <div class="alert alert-success" th:if="${mensagem}" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${mensagem}">Operação realizada com sucesso</span>
+      </div>
+
+      <!-- Controles de ordenação e filtragem -->
+      <div
+        class="d-flex justify-content-between align-items-center mb-4"
+        th:if="${entradas != null && !entradas.empty}"
+      >
+        <h3><i class="bi bi-journals me-2"></i>Entradas</h3>
+      </div>
+
+      <!-- Lista de entradas -->
+      <div class="row" th:if="${entradas != null && !entradas.empty}">
+        <div class="col-12">
+          <div
+            class="card mb-4 entrada-card"
+            th:each="entrada : ${entradas}"
+            th:style="${entrada.categoria != null ? 'border-left-color: ' + entrada.categoria.cor + ';' : ''}"
+          >
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5
+                class="card-title mb-0"
+                th:text="${entrada.titulo != null && !entrada.titulo.isEmpty() ? entrada.titulo : 'Entrada sem título'}"
+              >
+                Título da Entrada
+              </h5>
+              <div class="d-flex align-items-center">
+                <!-- Badge de humor com emoji correspondente -->
+                <span
+                  th:if="${entrada.humor != null}"
+                  th:class="${'badge me-2 ' + 
+                               (entrada.humor.name() == 'FELIZ' ? 'humor-feliz' : 
+                               entrada.humor.name() == 'TRISTE' ? 'humor-triste' : 
+                               entrada.humor.name() == 'NEUTRO' ? 'humor-neutro' :
+                               entrada.humor.name() == 'IRRITADO' ? 'humor-irritado' :
+                               entrada.humor.name() == 'ANSIOSO' ? 'humor-ansioso' :
+                               entrada.humor.name() == 'GRATO' ? 'humor-grato' :
+                               entrada.humor.name() == 'INSPIRADO' ? 'humor-inspirado' : 'bg-secondary')}"
+                  th:attr="data-humor=${entrada.humor}"
+                >
+                  <span th:text="${entrada.humor}">Humor</span>
+                  <span
+                    class="emoji-humor"
+                    th:text="${
+                    entrada.humor.name() == 'FELIZ' ? '😊' : 
+                    entrada.humor.name() == 'TRISTE' ? '😢' : 
+                    entrada.humor.name() == 'NEUTRO' ? '😐' :
+                    entrada.humor.name() == 'IRRITADO' ? '😠' :
+                    entrada.humor.name() == 'ANSIOSO' ? '😰' :
+                    entrada.humor.name() == 'GRATO' ? '😌' :
+                    entrada.humor.name() == 'INSPIRADO' ? '🤩' : ''
+                  }"
+                  ></span>
+                </span>
+                <!-- Data da entrada -->
+                <span
+                  class="ms-2 text-muted small"
+                  th:text="${entrada.dataCriacao != null ? 
+                        #temporals.format(entrada.dataCriacao, 'dd/MM/yyyy HH:mm') : 
+                        (entrada.dataHora != null ? #temporals.format(entrada.dataHora, 'dd/MM/yyyy HH:mm') : 'Data não disponível')}"
+                >
+                  01/01/2025 12:00
+                </span>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Conteúdo da entrada com quebras de linha preservadas -->
+              <p class="card-text" th:text="${entrada.conteudo}">
+                Conteúdo da entrada...
+              </p>
+
+              <!-- Badge de categoria -->
+              <div class="mt-2" th:if="${entrada.categoria != null}">
+                <span
+                  class="categoria-badge"
+                  th:style="'background-color: ' + ${entrada.categoria.cor} + '; color: #fff;'"
+                  th:text="${entrada.categoria.nome}"
+                  >Categoria</span
+                >
+              </div>
+            </div>
+            <div class="card-footer bg-transparent">
+              <div class="d-flex justify-content-end">
+                <a
+                  th:href="@{/diarios/{diarioId}/entradas/{id}(diarioId=${diario.id},id=${entrada.id})}"
+                  class="btn btn-sm btn-outline-primary me-2"
+                >
+                  <i class="bi bi-eye"></i> Ver
+                </a>
+                <a
+                  th:href="@{/diarios/{diarioId}/entradas/{id}/editar(diarioId=${diario.id},id=${entrada.id})}"
+                  class="btn btn-sm btn-outline-secondary me-2"
+                >
+                  <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a
+                  th:href="@{/diarios/{diarioId}/entradas/{id}/excluir(diarioId=${diario.id},id=${entrada.id})}"
+                  onclick="return confirm('Tem certeza que deseja excluir esta entrada?')"
+                  class="btn btn-sm btn-outline-danger"
+                >
+                  <i class="bi bi-trash"></i> Excluir
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensagem quando não há entradas -->
+      <div
+        class="alert alert-info text-center p-5"
+        th:if="${entradas == null || entradas.empty}"
+      >
+        <i class="bi bi-journal-text" style="font-size: 3rem"></i>
+        <h4 class="mt-3">Seu diário está vazio</h4>
+        <p class="mb-0">
+          Você ainda não possui entradas neste diário. Crie sua primeira entrada
+          clicando no botão "Nova Entrada".
+        </p>
+      </div>
+
+      <!-- Botão para voltar aos diários -->
+      <div class="d-flex justify-content-between mt-4">
+        <a th:href="@{/diarios}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Voltar para Meus Diários
+        </a>
+      </div>
+
+      <!-- Botão flutuante para visualização em grade -->
+      <a
+        th:href="@{/diarios/{id}/entradas(id=${diario.id})}"
+        class="btn btn-primary btn-floating btn-floating-secondary"
+      >
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+      </a>
+
+      <!-- Botão flutuante para adicionar entrada -->
+      <a
+        th:href="@{/diarios/{id}/entradas/nova(id=${diario.id})}"
+        class="btn btn-success btn-floating"
+      >
+        <i class="bi bi-plus-lg"></i>
+      </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

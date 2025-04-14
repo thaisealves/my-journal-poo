@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Corrigir este título -->
+    <title th:text="${titulo}">Nova Entrada</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link
+      rel="stylesheet"
+      href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" th:href="@{/diarios}">Diário Pessoal</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/diarios}">Meus Diários</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <span class="navbar-text me-3 text-light">
+              Olá, <span th:text="${nomeUsuario}">Usuário</span>!
+            </span>
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="btn btn-outline-light">Sair</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div class="row justify-content-center">
+        <div class="col-md-10">
+          <div class="card">
+            <div
+              class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            >
+              <!-- Corrigir este título -->
+              <h2
+                class="mb-0"
+                th:text="${isEdicao ? 'Editar Entrada' : 'Nova Entrada'}"
+              >
+                Nova Entrada
+              </h2>
+              <span class="badge bg-light text-dark" th:text="${diario.nome}"
+                >Nome do Diário</span
+              >
+            </div>
+            <div class="card-body">
+              <!-- Mensagem de erro -->
+              <div class="alert alert-danger" th:if="${erro}" th:text="${erro}">
+                Erro ao salvar entrada
+              </div>
+
+              <!-- Modifique o formulário para não usar th:field -->
+              <form
+                th:if="${isEdicao}"
+                th:action="@{/diarios/{diarioId}/entradas/{entradaId}/editar(diarioId=${diario.id},entradaId=${entrada.id})}"
+                method="post"
+              >
+                <!-- campos do formulário -->
+                <div class="mb-3">
+                  <label for="titulo" class="form-label">Título</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="titulo"
+                    name="titulo"
+                    required
+                    maxlength="100"
+                    th:value="${entrada != null ? entrada.titulo : ''}"
+                  />
+                  <div class="invalid-feedback">
+                    Por favor, forneça um título válido.
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="humor" class="form-label">Seu humor hoje</label>
+                  <select class="form-select" id="humor" name="humor">
+                    <option value="">Selecione seu humor</option>
+                    <option
+                      th:each="humorOpt : ${humores}"
+                      th:value="${humorOpt}"
+                      th:text="${humorOpt}"
+                      th:selected="${entrada != null && entrada.humor == humorOpt}"
+                    >
+                      Humor
+                    </option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="conteudo" class="form-label">Conteúdo</label>
+                  <textarea
+                    class="form-control"
+                    id="conteudo"
+                    name="conteudo"
+                    rows="8"
+                    required
+                    th:text="${entrada != null ? entrada.conteudo : ''}"
+                  ></textarea>
+                  <div class="invalid-feedback">
+                    Por favor, forneça um conteúdo.
+                  </div>
+                </div>
+
+                <!-- Nova seção para categorias -->
+                <div class="card mb-3">
+                  <div class="card-header bg-light">
+                    Informações da Categoria
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="categoria" class="form-label"
+                        >Nome da Categoria</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="categoria"
+                        name="categoria"
+                        placeholder="Ex: Pessoal, Trabalho, Viagem..."
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.nome : ''}"
+                      />
+                      <div class="form-text">
+                        Digite o nome de uma categoria existente ou crie uma
+                        nova.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="descricaoCategoria" class="form-label"
+                        >Descrição da Categoria</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="descricaoCategoria"
+                        name="descricaoCategoria"
+                        placeholder="Descrição opcional para nova categoria"
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.descricao : ''}"
+                      />
+                      <div class="form-text">
+                        Será usada apenas se a categoria não existir.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="corCategoria" class="form-label"
+                        >Cor da Categoria</label
+                      >
+                      <input
+                        type="color"
+                        class="form-control form-control-color"
+                        id="corCategoria"
+                        name="corCategoria"
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.cor : '#3498db'}"
+                        title="Escolha uma cor"
+                      />
+                      <div class="form-text">
+                        Será usada apenas se a categoria não existir.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Campos específicos para diários premium -->
+                <div class="card mb-3" th:if="${isPremium}">
+                  <div class="card-header bg-warning text-dark">
+                    Opções Premium
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="tipoConteudo" class="form-label"
+                        >Tipo de Conteúdo</label
+                      >
+                      <select
+                        class="form-select"
+                        id="tipoConteudo"
+                        name="tipoConteudo"
+                        onchange="toggleUrlField()"
+                      >
+                        <option value="TEXTO">Texto</option>
+                        <option
+                          th:each="tipo : ${tiposConteudo}"
+                          th:if="${tipo != T(com.diario.diariopessoal.model.enums.TipoConteudo).TEXTO}"
+                          th:value="${tipo}"
+                          th:text="${tipo}"
+                          th:selected="${isEnriquecida && tipoConteudoSelecionado == tipo}"
+                        >
+                          Tipo
+                        </option>
+                      </select>
+                    </div>
+
+                    <div
+                      class="mb-3"
+                      id="urlConteudoGroup"
+                      style="display: none"
+                    >
+                      <label for="urlConteudo" class="form-label"
+                        >URL do Conteúdo</label
+                      >
+                      <input
+                        type="url"
+                        class="form-control"
+                        id="urlConteudo"
+                        name="urlConteudo"
+                        placeholder="https://exemplo.com/meuconteudo"
+                        th:value="${isEnriquecida ? urlConteudo : ''}"
+                      />
+                      <div class="form-text">
+                        Cole aqui o link da imagem, vídeo, áudio ou página web.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mantenha os botões existentes -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <a
+                    th:href="@{/diarios/{id}/entradas(id=${diario.id})}"
+                    class="btn btn-secondary me-md-2"
+                    >Cancelar</a
+                  >
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+              </form>
+
+              <form
+                th:unless="${isEdicao}"
+                th:action="@{/diarios/{diarioId}/entradas/nova(diarioId=${diario.id})}"
+                method="post"
+              >
+                <!-- campos do formulário -->
+                <div class="mb-3">
+                  <label for="titulo" class="form-label">Título</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="titulo"
+                    name="titulo"
+                    required
+                    maxlength="100"
+                  />
+                  <div class="invalid-feedback">
+                    Por favor, forneça um título válido.
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="humor" class="form-label">Seu humor hoje</label>
+                  <select class="form-select" id="humor" name="humor">
+                    <option value="FELIZ">Feliz 😊</option>
+                    <option value="INSPIRADO">Inspirado 🤩</option>
+                    <option value="GRATO">Grato 😌</option>
+                    <option value="NEUTRO">Neutro 😐</option>
+                    <option value="ANSIOSO">Ansioso 😰</option>
+                    <option value="TRISTE">Triste 😢</option>
+                    <option value="IRRITADO">Irritado 😠</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="conteudo" class="form-label">Conteúdo</label>
+                  <textarea
+                    class="form-control"
+                    id="conteudo"
+                    name="conteudo"
+                    rows="8"
+                    required
+                  ></textarea>
+                  <div class="invalid-feedback">
+                    Por favor, forneça um conteúdo.
+                  </div>
+                </div>
+
+                <!-- Nova seção para categorias -->
+                <div class="card mb-3">
+                  <div class="card-header bg-light">
+                    Informações da Categoria
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="categoria" class="form-label"
+                        >Nome da Categoria</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="categoria"
+                        name="categoria"
+                        placeholder="Ex: Pessoal, Trabalho, Viagem..."
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.nome : ''}"
+                      />
+                      <div class="form-text">
+                        Digite o nome de uma categoria existente ou crie uma
+                        nova.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="descricaoCategoria" class="form-label"
+                        >Descrição da Categoria</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="descricaoCategoria"
+                        name="descricaoCategoria"
+                        placeholder="Descrição opcional para nova categoria"
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.descricao : ''}"
+                      />
+                      <div class="form-text">
+                        Será usada apenas se a categoria não existir.
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="corCategoria" class="form-label"
+                        >Cor da Categoria</label
+                      >
+                      <input
+                        type="color"
+                        class="form-control form-control-color"
+                        id="corCategoria"
+                        name="corCategoria"
+                        th:value="${entrada != null && entrada.categoria != null ? entrada.categoria.cor : '#3498db'}"
+                        title="Escolha uma cor"
+                      />
+                      <div class="form-text">
+                        Será usada apenas se a categoria não existir.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Campos específicos para diários premium -->
+                <div class="card mb-3" th:if="${isPremium}">
+                  <div class="card-header bg-warning text-dark">
+                    Opções Premium
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label for="tipoConteudo" class="form-label"
+                        >Tipo de Conteúdo</label
+                      >
+                      <select
+                        class="form-select"
+                        id="tipoConteudo"
+                        name="tipoConteudo"
+                        onchange="toggleUrlField()"
+                      >
+                        <option value="TEXTO">Texto</option>
+                        <option
+                          th:each="tipo : ${tiposConteudo}"
+                          th:if="${tipo != T(com.diario.diariopessoal.model.enums.TipoConteudo).TEXTO}"
+                          th:value="${tipo}"
+                          th:text="${tipo}"
+                          th:selected="${isEnriquecida && tipoConteudoSelecionado == tipo}"
+                        >
+                          Tipo
+                        </option>
+                      </select>
+                    </div>
+
+                    <div
+                      class="mb-3"
+                      id="urlConteudoGroup"
+                      style="display: none"
+                    >
+                      <label for="urlConteudo" class="form-label"
+                        >URL do Conteúdo</label
+                      >
+                      <input
+                        type="url"
+                        class="form-control"
+                        id="urlConteudo"
+                        name="urlConteudo"
+                        placeholder="https://exemplo.com/meuconteudo"
+                        th:value="${isEnriquecida ? urlConteudo : ''}"
+                      />
+                      <div class="form-text">
+                        Cole aqui o link da imagem, vídeo, áudio ou página web.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Mantenha os botões existentes -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                  <a
+                    th:href="@{/diarios/{id}/entradas(id=${diario.id})}"
+                    class="btn btn-secondary me-md-2"
+                    >Cancelar</a
+                  >
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:inline="javascript">
+      $(function () {
+        // Usar as categorias passadas pelo servidor
+        var categorias = [];
+
+        /* Itera sobre cada categoria do backend */
+        /*[# th:each="cat : ${categorias}" ]*/
+        categorias.push({
+          value: /*[[${cat.nome}]]*/ "",
+          label: /*[[${cat.nome}]]*/ "",
+          desc: /*[[${cat.descricao}]]*/ "",
+          cor: /*[[${cat.cor}]]*/ "",
+        });
+        /*[/]*/
+
+        // Log para debug
+        console.log("Categorias carregadas: ", categorias);
+
+        // Obtém o valor atual (se estiver editando)
+        var categoriaAtual = $("#categoria").val();
+        console.log("Categoria atual: ", categoriaAtual);
+
+        $("#categoria").autocomplete({
+          source: categorias,
+          minLength: 1,
+          select: function (event, ui) {
+            // Ao selecionar uma categoria, preencher os outros campos
+            $("#descricaoCategoria").val(ui.item.desc);
+            $("#corCategoria").val(ui.item.cor);
+          },
+        });
+
+        // Se estiver editando, também preencher os campos relacionados
+        if (categoriaAtual) {
+          var categoriaEncontrada = categorias.find(
+            (c) => c.value === categoriaAtual
+          );
+          if (categoriaEncontrada) {
+            $("#descricaoCategoria").val(categoriaEncontrada.desc);
+            $("#corCategoria").val(categoriaEncontrada.cor);
+          }
+        }
+      });
+      // Script para mostrar/esconder o campo de URL baseado no tipo de conteúdo
+      function toggleUrlField() {
+        const tipoConteudo = document.getElementById("tipoConteudo");
+        const urlGroup = document.getElementById("urlConteudoGroup");
+        const urlInput = document.getElementById("urlConteudo");
+
+        if (tipoConteudo.value === "TEXTO") {
+          urlGroup.style.display = "none";
+          urlInput.required = false;
+        } else {
+          urlGroup.style.display = "block";
+          urlInput.required = true;
+        }
+      }
+
+      // Inicializar o estado do campo URL
+      document.addEventListener("DOMContentLoaded", function () {
+        if (document.getElementById("tipoConteudo")) {
+          toggleUrlField();
+        }
+      });
+    </script>
+  </body>
+</html>

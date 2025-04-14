@@ -13,5 +13,5 @@ public interface IDiario {
 
     void setUsuario(Usuario usuario);
 
-    void adicionarEntrada(String conteudo);
+    void adicionarEntrada(String titulo, String conteudo);
 }

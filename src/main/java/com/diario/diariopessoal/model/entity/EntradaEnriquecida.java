@@ -33,19 +33,20 @@ public class EntradaEnriquecida extends Entrada {
         super();
     }
 
-    public EntradaEnriquecida(String conteudo, Categoria categoria, Usuario autor, TipoConteudo tipoConteudo,
+    public EntradaEnriquecida(String titulo, String conteudo, Categoria categoria, Usuario autor,
+            TipoConteudo tipoConteudo,
             String urlConteudo) {
-        super(conteudo, categoria, autor);
+        super(titulo, conteudo, categoria, autor);
         verificarUsuarioPremium(autor);
 
         this.tipoConteudo = tipoConteudo;
         this.urlConteudo = urlConteudo;
     }
 
-    public EntradaEnriquecida(String conteudo, Categoria categoria, Usuario autor,
+    public EntradaEnriquecida(String titulo, String conteudo, Categoria categoria, Usuario autor,
             TipoConteudo tipoConteudo, String urlConteudo,
             String descricaoMidia, byte[] conteudoBinario) {
-        super(conteudo, categoria, autor);
+        super(titulo, conteudo, categoria, autor);
 
         verificarUsuarioPremium(autor);
 

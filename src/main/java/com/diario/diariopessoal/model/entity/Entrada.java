@@ -19,6 +19,9 @@ import jakarta.validation.constraints.NotNull;
 @Table(name = "entrada")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Entrada extends EntidadeBase {
+    @Column(name = "titulo")
+    private String titulo;
+
     @NotBlank
     @Lob
     @Column(nullable = false)
@@ -43,14 +46,16 @@ public class Entrada extends EntidadeBase {
         ContadorEntradas.incrementarEntradas();
     }
 
-    public Entrada(String conteudo, Usuario autor) {
+    public Entrada(String titulo, String conteudo, Usuario autor) {
+        this.titulo = titulo;
         this.conteudo = conteudo;
         this.autor = autor;
         this.categoria = Categoria.criarCategoriaPadrao();
         ContadorEntradas.incrementarEntradas();
     }
 
-    public Entrada(String conteudo, Categoria categoria, Usuario autor) {
+    public Entrada(String titulo, String conteudo, Categoria categoria, Usuario autor) {
+        this.titulo = titulo;
         this.conteudo = conteudo;
         this.categoria = categoria;
         this.autor = autor;
@@ -87,6 +92,14 @@ public class Entrada extends EntidadeBase {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     @Override
