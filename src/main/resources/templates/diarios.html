@@ -1,69 +1,121 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${titulo}">Meus Diários</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+  </head>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" th:href="@{/}">Diário Pessoal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/diarios}">Meus Diários</a>
-                    </li>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <span class="navbar-text me-3 text-light">
-                        Olá, <span th:text="${nomeUsuario}">Usuário</span>!
-                    </span>
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit" class="btn btn-outline-light">Sair</button>
-                    </form>
-                </div>
-            </div>
+      <div class="container">
+        <a class="navbar-brand" th:href="@{/diarios}">Diário Pessoal</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" th:href="@{/diarios}">Meus Diários</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            <span class="navbar-text me-3 text-light">
+              Olá, <span th:text="${nomeUsuario}">Usuário</span>!
+            </span>
+            <form th:action="@{/logout}" method="post">
+              <button type="submit" class="btn btn-outline-light">Sair</button>
+            </form>
+          </div>
         </div>
+      </div>
     </nav>
-    
+
     <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Meus Diários</h1>
-            <a href="#" class="btn btn-primary">Novo Diário</a>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Meu Diário Pessoal</h5>
-                        <p class="card-text">Anotações sobre meu dia a dia e reflexões pessoais.</p>
-                    </div>
-                    <div class="card-footer">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">Criado em: 14/04/2025</small>
-                            <a href="#" class="btn btn-sm btn-outline-primary">Abrir</a>
-                        </div>
-                    </div>
-                </div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Meus Diários</h1>
+        <a th:href="@{/diarios/novo}" class="btn btn-primary">Novo Diário</a>
+      </div>
+      <!-- Mensagem de erro -->
+      <div class="alert alert-danger" th:if="${erro}" role="alert">
+        <span th:text="${erro}">Erro ao carregar diários</span>
+      </div>
+
+      <!-- Mensagem de sucesso -->
+      <div class="alert alert-success" th:if="${mensagem}" role="alert">
+        <span th:text="${mensagem}">Operação realizada com sucesso</span>
+      </div>
+
+      <!-- Lista de diários dinâmica -->
+      <div class="row" th:if="${diarios != null && !diarios.empty}">
+        <div class="col-md-4 mb-4" th:each="diario : ${diarios}">
+          <div class="card h-100">
+            <div
+              class="card-header"
+              th:if="${#strings.contains(diario.class.name, 'DiarioPremium')}"
+            >
+              <span class="badge bg-warning text-dark">Premium</span>
             </div>
-            
-            <div class="col-12">
-                <div class="alert alert-info mt-4">
-                    <p class="mb-0">Esta é uma página protegida. Apenas usuários autenticados podem visualizá-la.</p>
-                </div>
+            <div class="card-body">
+              <h5 class="card-title" th:text="${diario.nome}">
+                Nome do Diário
+              </h5>
+              <p
+                class="card-text"
+                th:text="${diario.descricao != null && !diario.descricao.isEmpty() ? diario.descricao : 'Sem descrição'}"
+              >
+                Descrição do diário
+              </p>
             </div>
+            <div class="card-footer">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <a
+                    th:href="@{/diarios/{id}(id=${diario.id})}"
+                    class="btn btn-sm btn-outline-primary me-1"
+                    >Abrir</a
+                  >
+                  <a
+                    th:href="@{/diarios/{id}/excluir(id=${diario.id})}"
+                    onclick="return confirm('Tem certeza que deseja excluir este diário?')"
+                    class="btn btn-sm btn-outline-danger"
+                    >Excluir</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="alert alert-info" th:if="${diarios == null || diarios.empty}">
+        <p class="mb-0">
+          Você ainda não possui diários. Crie seu primeiro diário clicando no
+          botão "Novo Diário".
+        </p>
+      </div>
+
+      <div class="alert alert-info mt-4">
+        <p class="mb-0">
+          Esta é uma página protegida. Apenas usuários autenticados podem
+          visualizá-la.
+        </p>
+      </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  </body>
 </html>

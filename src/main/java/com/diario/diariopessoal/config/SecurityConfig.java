@@ -27,36 +27,53 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                // Desabilitar CSRF (Cross Site Request Forgery)
+                .csrf(csrf -> csrf
+                        // Desabilitar apenas para o console H2
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                )
                 .authorizeHttpRequests(authorize -> authorize
-                        // urls publicas
+                        // URLs públicas
                         .requestMatchers("/", "/login", "/usuarios/cadastro", "/usuarios/salvar").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        // urls com auth
-                        .anyRequest().authenticated())
+                        // Permitir acesso ao console H2
+                        .requestMatchers("/h2-console/**").permitAll()
+                        // URLs que requerem autenticação
+                        .anyRequest().authenticated()
+                )
+                // Configurar segurança de cabeçalhos
+                .headers(headers -> headers
+                        // Desabilitar X-Frame-Options para permitir frames no console H2
+                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
+                )
+                // Configurar login customizado
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
                         .defaultSuccessUrl("/diarios", true)
                         .failureUrl("/login?error=true")
-                        .permitAll())
+                        .permitAll()
+                )
+                // Configurar logout
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                         .logoutSuccessUrl("/login?logout=true")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .permitAll())
+                        .permitAll()
+                )
+                // Tratamento de acesso negado
                 .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/403") // Página para acesso negado
+                        .accessDeniedPage("/403")
                 );
-
+                
         return http.build();
     }
-
+    
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+            .userDetailsService(userDetailsService)
+            .passwordEncoder(passwordEncoder());
     }
 }
