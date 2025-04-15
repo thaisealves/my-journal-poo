@@ -191,14 +191,39 @@
                 <span
                   th:if="${entrada instanceof T(com.diario.diariopessoal.model.entity.EntradaEnriquecida)}"
                 >
-                  <i
-                    th:with="entradaEnriquecida=${entrada}"
-                    th:class="${'content-icon ' + (entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).IMAGEM ? 'bi bi-image text-success' : 
-                                              entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).VIDEO ? 'bi bi-film text-danger' :
-                                              entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).AUDIO ? 'bi bi-music-note-beamed text-primary' :
-                                              entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).LINK ? 'bi bi-link text-warning' : 'bi bi-text-paragraph text-dark')}"
-                    aria-hidden="true"
-                  ></i>
+                  <th:block
+                    th:with="entradaEnriquecida=${entrada}, tipoStr=${#strings.toString(entradaEnriquecida.tipoConteudo)}"
+                  >
+                    <!-- Ícone de imagem -->
+                    <i
+                      th:if="${#strings.contains(tipoStr, 'IMAGEM')}"
+                      class="content-icon bi bi-image text-success"
+                    ></i>
+
+                    <!-- Ícone de vídeo -->
+                    <i
+                      th:if="${#strings.contains(tipoStr, 'VIDEO')}"
+                      class="content-icon bi bi-film text-danger"
+                    ></i>
+
+                    <!-- Ícone de áudio -->
+                    <i
+                      th:if="${#strings.contains(tipoStr, 'AUDIO')}"
+                      class="content-icon bi bi-music-note-beamed text-primary"
+                    ></i>
+
+                    <!-- Ícone de link -->
+                    <i
+                      th:if="${tipoStr == 'LINK'}"
+                      class="content-icon bi bi-link text-warning"
+                    ></i>
+
+                    <!-- Ícone padrão para outros tipos -->
+                    <i
+                      th:if="${!#strings.contains(tipoStr, 'IMAGEM') && !#strings.contains(tipoStr, 'VIDEO') && !#strings.contains(tipoStr, 'AUDIO') && tipoStr != 'LINK'}"
+                      class="content-icon bi bi-text-paragraph text-dark"
+                    ></i>
+                  </th:block>
                 </span>
                 <!-- Data da entrada -->
               </div>
@@ -226,43 +251,35 @@
                 th:if="${entrada instanceof T(com.diario.diariopessoal.model.entity.EntradaEnriquecida)}"
               >
                 <div th:with="entradaEnriquecida=${entrada}" class="mt-2">
-                  <div
-                    th:if="${entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).IMAGEM}"
-                    class="text-center"
-                  >
-                    <img
-                      th:src="${entradaEnriquecida.urlConteudo}"
-                      class="img-fluid rounded"
-                      style="max-height: 150px"
-                      alt="Imagem"
-                    />
+                  <!-- Imagem -->
+                  <div th:if="${#strings.contains(#strings.toString(entradaEnriquecida.tipoConteudo), 'IMAGEM')}"
+                       class="text-center">
+                    <img th:src="${entradaEnriquecida.urlConteudo}"
+                         class="img-fluid rounded"
+                         style="max-height: 150px"
+                         alt="Imagem" />
                   </div>
-                  <div
-                    th:if="${entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).VIDEO}"
-                    class="text-center"
-                  >
+
+                  <!-- Vídeo -->
+                  <div th:if="${#strings.contains(#strings.toString(entradaEnriquecida.tipoConteudo), 'VIDEO')}"
+                       class="text-center">
                     <i class="bi bi-film" style="font-size: 2rem"></i>
                     <p class="mt-2">Vídeo disponível</p>
                   </div>
-                  <div
-                    th:if="${entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).AUDIO}"
-                    class="text-center"
-                  >
-                    <i
-                      class="bi bi-music-note-beamed"
-                      style="font-size: 2rem"
-                    ></i>
+
+                  <!-- Áudio -->
+                  <div th:if="${#strings.contains(#strings.toString(entradaEnriquecida.tipoConteudo), 'AUDIO')}"
+                       class="text-center">
+                    <i class="bi bi-music-note-beamed" style="font-size: 2rem"></i>
                     <p class="mt-2">Áudio disponível</p>
                   </div>
-                  <div
-                    th:if="${entradaEnriquecida.tipoConteudo == T(com.diario.diariopessoal.model.enums.TipoConteudo).LINK}"
-                    class="text-center"
-                  >
-                    <a
-                      th:href="${entradaEnriquecida.urlConteudo}"
-                      target="_blank"
-                      class="btn btn-sm btn-outline-primary"
-                    >
+
+                  <!-- Link -->
+                  <div th:if="${#strings.toString(entradaEnriquecida.tipoConteudo) == 'LINK'}"
+                       class="text-center">
+                    <a th:href="${entradaEnriquecida.urlConteudo}"
+                       target="_blank"
+                       class="btn btn-sm btn-outline-primary">
                       <i class="bi bi-link"></i> Abrir Link
                     </a>
                   </div>
