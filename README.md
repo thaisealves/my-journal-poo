@@ -226,6 +226,32 @@ public void adicionarEntrada(String titulo, String conteudo, Categoria categoria
 }
 ```
 
+#### 15. Polimorfismo
+
+Capacidade de tratar objetos de diferentes classes de maneira uniforme através de uma interface ou classe base comum.
+
+**Exemplo:**
+
+```java
+// Na implementação de DiarioService por diferentes classes
+DiarioService diarioSimples = new DiarioTexto("Meu Diário", "Descrição", usuario);
+DiarioService diarioPremium = new DiarioPremium("Diário Premium", "Com recursos avançados", usuarioPremium);
+
+// Chamadas polimórficas - mesmo método, comportamentos específicos de cada implementação
+diarioSimples.salvarEntrada(entradaTexto);  // Comportamento de DiarioTexto
+diarioPremium.salvarEntrada(entradaMultimidia);  // Comportamento de DiarioPremium
+
+// Outro exemplo com classe base e tratamento polimórfico
+List<DiarioBase> todosDiarios = new ArrayList<>();
+todosDiarios.add(new DiarioTexto("Diário 1", "Descrição", usuario));
+todosDiarios.add(new DiarioPremium("Diário 2", "Descrição premium", usuarioPremium));
+
+// Iterando e chamando métodos polimorficamente
+for (DiarioBase diario : todosDiarios) {
+    diario.adicionarEntrada("Nova entrada", "Conteúdo");  // Cada tipo executa sua própria implementação
+}
+```
+
 ## 🔧 Tecnologias Utilizadas
 
 - Java 17
