@@ -843,3 +843,12 @@ UPDATE diario_base SET usuario_id = ? WHERE id IN (?) [42102-232]
 2025-04-14 21:44:48.383298-03:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLDataException: Value too long for column "URL_CONTEUDO CHARACTER VARYING(1024)": "'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMVFhUXGBga... (14639)"; SQL statement:
 insert into entrada_enriquecida (conteudo_binario,descricao_midia,tipo_conteudo,url_conteudo,id) values (?,?,?,?,?) [22001-232]
+2025-04-15 07:51:05.838474-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ENTRADA_BASE" not found; SQL statement:
+SELECT COUNT(*) FROM entrada_base [42102-232]
+2025-04-15 07:54:29.798129-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ENTRADA_BASE" not found; SQL statement:
+SELECT COUNT(*) FROM entrada_base [42102-232]
+2025-04-15 07:55:22.811728-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "ENTRADA_BASE" not found; SQL statement:
+SELECT COUNT(*) FROM entrada_base [42102-232]

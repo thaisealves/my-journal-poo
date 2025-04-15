@@ -1,31 +1,36 @@
 package com.diario.diariopessoal.config;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.diario.diariopessoal.model.entity.ContadorEntradas;
-import com.diario.diariopessoal.repository.EntradaRepository;
 
-import jakarta.annotation.PostConstruct;
-
+/**
+ * Inicializa o contador estático de entradas na inicialização da aplicação.
+ * Consulta o banco de dados para obter o número atual de entradas.
+ */
 @Component
-public class ContadorInicializador {
+public class ContadorInicializador implements CommandLineRunner {
 
-    @Autowired
-    private EntradaRepository entradaRepository;
-
-    @PostConstruct
-    public void inicializarContador() {
-        // Obter o número total de entradas no banco de dados
-        long totalEntradas = entradaRepository.count();
-
-        // Sincronizar o valor estático
-        ContadorEntradas.resetar();
-        for (int i = 0; i < totalEntradas; i++) {
-            ContadorEntradas.incrementarEntradas();
-        }
-
-        System.out.println("Contador inicializado com " + ContadorEntradas.getTotalEntradas() + " entradas.");
+    @PersistenceContext
+    private EntityManager entityManager;
+    
+    @Override
+    @Transactional(readOnly = true)
+    public void run(String... args) throws Exception {
+        // Consulta nativa para contar todas as entradas
+        Query query = entityManager.createNativeQuery("SELECT COUNT(*) FROM entrada");
+        Long total = ((Number) query.getSingleResult()).longValue();
+        
+        // Inicializa o contador com o valor atual
+        boolean sucesso = ContadorEntradas.inicializar(total);
+        
+        System.out.println("Contador de entradas " + (sucesso ? "inicializado" : "já inicializado") + 
+                           " com: " + ContadorEntradas.getTotalEntradas() + " entradas");
     }
 }

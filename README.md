@@ -4,6 +4,15 @@
 
 Diário Pessoal é um sistema de gerenciamento de diários que permite aos usuários registrar, organizar e visualizar suas reflexões pessoais. O sistema implementa um modelo de assinatura que distingue entre usuários regulares e premium, oferecendo funcionalidades adicionais para os assinantes premium.
 
+## 🎥 Visualização do Projeto
+
+<p align='center'>
+  <a href="https://youtu.be/Fb4oROG_scM"><img alt="Sponsor" src="https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" /></a>
+  &nbsp;
+</p>
+
+
+
 ## 🧩 Principais Funcionalidades
 
 - Criação e gerenciamento de diários

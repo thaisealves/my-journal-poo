@@ -228,7 +228,7 @@ public class EntradaController {
             }
 
             // Incrementar o contador geral
-            ContadorEntradas.incrementarEntradas();
+            ContadorEntradas.incrementar();
 
             // Salvar o diário atualizado
             diarioRepository.save(diario);
@@ -337,7 +337,7 @@ public class EntradaController {
                 throw new RuntimeException("Tipo de diário não suportado");
             }
             // Decrementar o contador geral
-            ContadorEntradas.decrementarContador();
+            ContadorEntradas.decrementar();
 
             // Salvar o diário atualizado
             diarioRepository.save(diario);

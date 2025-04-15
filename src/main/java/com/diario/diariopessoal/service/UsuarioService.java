@@ -86,60 +86,43 @@ public class UsuarioService {
                 return usuarioRepository.save(premium);
             }
 
-            // Coletar todos os dados do usuário que serão necessários
-            Long usuarioId = usuario.getId();
-            String usernameOriginal = usuario.getUsername();
-            String email = usuario.getEmail();
-            String senha = usuario.getSenha();
-            PerfilUsuario perfil = usuario.getPerfil();
-            LocalDateTime dataCriacao = usuario.getDataCriacao();
+            // Buscar todos os diários do usuário antes de qualquer modificação
+            List<DiarioBase> diarios = diarioRepository.findByUsuarioId(usuario.getId());
             
-            // Armazenar apenas os IDs dos diários
-            List<Long> diarioIds = diarioRepository.findByUsuarioId(usuarioId)
-                .stream()
-                .map(DiarioBase::getId)
-                .toList();
-
+            // Criar novo usuário premium e copiar dados do usuário original
+            UsuarioPremium premium = new UsuarioPremium();
+            premium.setUsername(usuario.getUsername());
+            premium.setEmail(usuario.getEmail());
+            premium.setSenha(usuario.getSenha());
+            premium.setPerfil(usuario.getPerfil());
+            premium.setDataCriacao(usuario.getDataCriacao());
+            premium.setDataAssinatura(LocalDate.now());
+            premium.setPlano(TipoAssinatura.TRIMESTRAL);
+            
+            // IMPORTANTE: Desassociar diários do usuário original
+            // para evitar exclusão em cascata
+            for (DiarioBase diario : diarios) {
+                diario.setUsuario(null);
+            }
+            diarioRepository.saveAll(diarios);
+            entityManager.flush();
+            
             // Remover o usuário antigo
             usuarioRepository.delete(usuario);
             entityManager.flush();
             
-            // Criar novo usuário premium
-            UsuarioPremium premium = new UsuarioPremium();
-            premium.setUsername(usernameOriginal);
-            premium.setEmail(email);
-            premium.setSenha(senha);
-            premium.setPerfil(perfil);
-            premium.setDataCriacao(dataCriacao);
-            premium.setDataAssinatura(LocalDate.now());
-            premium.setPlano(TipoAssinatura.TRIMESTRAL);
-            
             // Salvar o usuário premium
             UsuarioPremium saved = usuarioRepository.save(premium);
             entityManager.flush();
-
-            // IMPORTANTE: Limpar o contexto de persistência 
-            // para forçar reload das entidades
-            entityManager.clear();
             
-            // Agora atualizar cada diário individualmente com uma nova consulta
-            if (!diarioIds.isEmpty()) {
-                for (Long diarioId : diarioIds) {
-                    // Buscar cada diário novamente do banco de dados
-                    DiarioBase diario = diarioRepository.findById(diarioId)
-                        .orElse(null);
-                    
-                    if (diario != null) {
-                        // Atualizar a referência para o novo usuário premium
-                        diario.setUsuario(saved);
-                        diarioRepository.save(diario);
-                    }
-                }
-                entityManager.flush();
+            // Reassociar os diários ao novo usuário premium
+            for (DiarioBase diario : diarios) {
+                diario.setUsuario(saved);
             }
+            diarioRepository.saveAll(diarios);
+            entityManager.flush();
             
             return saved;
-            
         } catch (Exception e) {
             System.err.println("Erro ao converter para premium: " + e.getMessage());
             e.printStackTrace();
