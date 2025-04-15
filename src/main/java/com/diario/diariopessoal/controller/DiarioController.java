@@ -13,13 +13,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.diario.diariopessoal.model.entity.ContadorEntradas;
 import com.diario.diariopessoal.model.entity.DiarioBase;
-import com.diario.diariopessoal.model.entity.DiarioFactory;
 import com.diario.diariopessoal.model.entity.DiarioPremium;
 import com.diario.diariopessoal.model.entity.DiarioTexto;
 import com.diario.diariopessoal.model.entity.Entrada;
 import com.diario.diariopessoal.model.entity.GerenciadorDiarios;
 import com.diario.diariopessoal.model.entity.Usuario;
 import com.diario.diariopessoal.model.entity.UsuarioPremium;
+import com.diario.diariopessoal.dto.DiarioCriacaoDTO;
 import com.diario.diariopessoal.repository.DiarioRepository;
 import com.diario.diariopessoal.repository.UsuarioRepository;
 
@@ -63,77 +63,80 @@ public class DiarioController {
      * Exibe o formulário para criar um novo diário
      */
     @GetMapping("/novo")
-    public String exibirFormularioCriarDiario(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
+    public String formularioCriarDiario(Model model) {
+        try {
+            // Obter usuário autenticado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Usuario usuario = usuarioRepository.findByUsername(auth.getName())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        boolean isPremium = auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_PREMIUM"));
+            model.addAttribute("diarioDTO", new DiarioCriacaoDTO());
+            model.addAttribute("nomeUsuario", usuario.getUsername());
+            
+            // Verificar se é usuário premium e possui assinatura válida
+            boolean isPremium = false;
+            if (usuario instanceof UsuarioPremium) {
+                UsuarioPremium premium = (UsuarioPremium) usuario;
+                isPremium = premium.isAssinaturaAtiva();
+            }
+            model.addAttribute("isPremium", isPremium);
 
-        model.addAttribute("nomeUsuario", username);
-        model.addAttribute("isPremium", isPremium);
-
-        return "diario-form";
+            return "diario-form";
+        } catch (Exception e) {
+            model.addAttribute("erro", "Erro ao carregar formulário: " + e.getMessage());
+            return "redirect:/diarios";
+        }
     }
 
     /**
      * Processa o formulário para criar um novo diário
      */
     @PostMapping("/novo")
-    public String criarNovoDiario(
-            @RequestParam("nome") String nome,
-            @RequestParam("descricao") String descricao,
-            @RequestParam(name = "premium", defaultValue = "false") boolean isPremium,
-            RedirectAttributes redirectAttributes) {
-
+    public String processarCriacaoDiario(@ModelAttribute DiarioCriacaoDTO diarioDTO, 
+                                         RedirectAttributes redirectAttributes) {
         try {
-            // Obter o usuário autenticado
+            // Obter usuário autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            String username = auth.getName();
-
-            // Buscar usuário no banco de dados
-            Usuario usuario = usuarioRepository.findByUsername(username)
+            Usuario usuario = usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-            // Criar diário usando o Factory Pattern
-            DiarioBase diario;
-
-            if (isPremium) {
-                // Verificar se o usuário é premium
+            
+            // Verificar se é diário premium
+            if ("premium".equals(diarioDTO.getTipo())) {
+                // Verificar se usuário é premium
                 if (!(usuario instanceof UsuarioPremium)) {
-                    redirectAttributes.addFlashAttribute("erro",
-                            "Apenas usuários premium podem criar diários premium");
-                    return "redirect:/diarios/novo";
+                    redirectAttributes.addFlashAttribute("erro", 
+                        "É necessário ser um usuário Premium para criar diários enriquecidos");
+                    return "redirect:/assinatura/mock";
                 }
-
-                // Criar diário premium usando o factory
-                diario = DiarioFactory.criarDiarioPremium(nome, descricao, usuario);
+                
+                // Verificar se assinatura está ativa
+                UsuarioPremium premium = (UsuarioPremium) usuario;
+                if (!premium.isAssinaturaAtiva()) {
+                    redirectAttributes.addFlashAttribute("erro", 
+                        "Sua assinatura Premium expirou. Por favor, renove para criar diários premium");
+                    return "redirect:/assinatura/mock";
+                }
+                
+                // Criar diário premium
+                DiarioPremium diario = new DiarioPremium();
+                diario.setNome(diarioDTO.getNome());
+                diario.setDescricao(diarioDTO.getDescricao());
+                diario.setUsuario(premium);
+                diarioRepository.save(diario);
             } else {
-                // Criar diário de texto usando o factory
-                diario = DiarioFactory.criarDiarioTexto(nome, descricao, usuario);
+                // Criar diário normal
+                DiarioTexto diario = new DiarioTexto();
+                diario.setNome(diarioDTO.getNome());
+                diario.setDescricao(diarioDTO.getDescricao());
+                diario.setUsuario(usuario);
+                diarioRepository.save(diario);
             }
-
-            // Salvar no repositório
-            diario = diarioRepository.save(diario);
-
-            // Adicionar ao gerenciador de diários
-            gerenciadorDiarios.adicionarDiario(nome, diario);
-
-            // Adicionar ao usuário
-            usuario.adicionarDiario(diario);
-
-            // Salvar o usuário atualizado
-            usuarioRepository.save(usuario);
-
-            // Mensagem de sucesso
-            redirectAttributes.addFlashAttribute("mensagem",
-                    "Diário '" + nome + "' criado com sucesso!");
-
+            
+            redirectAttributes.addFlashAttribute("mensagem", "Diário criado com sucesso!");
             return "redirect:/diarios";
-
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("erro",
-                    "Erro ao criar diário: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("erro", "Erro ao criar diário: " + e.getMessage());
             return "redirect:/diarios/novo";
         }
     }

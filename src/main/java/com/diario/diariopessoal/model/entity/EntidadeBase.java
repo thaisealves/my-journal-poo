@@ -34,6 +34,10 @@ public abstract class EntidadeBase implements Persistente {
         return dataCriacao;
     }
 
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
     public abstract boolean validar(); // método abstrato que deve ser implementado pelas subclasses, cada entidade
                                        // deve criar sua validação personalizada
 }

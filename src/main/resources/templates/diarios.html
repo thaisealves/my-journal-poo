@@ -31,10 +31,16 @@
             <li class="nav-item">
               <a class="nav-link active" th:href="@{/diarios}">Meus Diários</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/assinatura}">
+                <i class="bi bi-star"></i> Assinatura Premium
+              </a>
+            </li>
           </ul>
           <div class="d-flex align-items-center">
             <span class="navbar-text me-3 text-light">
               Olá, <span th:text="${nomeUsuario}">Usuário</span>!
+              <span class="badge bg-warning text-dark me-2" th:if="${isPremium != null && isPremium}">PREMIUM</span>
             </span>
             <form th:action="@{/logout}" method="post">
               <button type="submit" class="btn btn-outline-light">Sair</button>
@@ -49,6 +55,22 @@
         <h1>Meus Diários</h1>
         <a th:href="@{/diarios/novo}" class="btn btn-primary">Novo Diário</a>
       </div>
+
+      <div class="alert alert-warning mb-4" th:if="${isPremium != null && !isPremium}">
+        <div class="d-flex align-items-center">
+            <div class="flex-shrink-0 me-3">
+                <i class="bi bi-stars fs-1"></i>
+            </div>
+            <div>
+                <h5 class="mb-1">Ative o Premium para recursos avançados!</h5>
+                <p class="mb-2">Com o Premium, você pode criar diários com entradas enriquecidas incluindo fotos, vídeos e áudios.</p>
+                <a th:href="@{/assinatura/mock}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-star-fill"></i> Ativar Premium (Modo Acadêmico)
+                </a>
+            </div>
+        </div>
+      </div>
+
       <!-- Mensagem de erro -->
       <div class="alert alert-danger" th:if="${erro}" role="alert">
         <span th:text="${erro}">Erro ao carregar diários</span>
@@ -57,6 +79,39 @@
       <!-- Mensagem de sucesso -->
       <div class="alert alert-success" th:if="${mensagem}" role="alert">
         <span th:text="${mensagem}">Operação realizada com sucesso</span>
+      </div>
+
+      <div class="dropdown mb-3" th:if="${isPremium != null && isPremium}">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="planoDropdown" 
+                data-bs-toggle="dropdown" aria-expanded="false">
+            Alterar Plano Premium
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="planoDropdown">
+            <li>
+                <form th:action="@{/usuarios/atualizar-plano}" method="post" class="px-3 py-2">
+                    <input type="hidden" name="plano" value="MENSAL">
+                    <button type="submit" class="btn btn-sm btn-link text-decoration-none w-100 text-start">
+                        Plano Mensal (1 mês)
+                    </button>
+                </form>
+            </li>
+            <li>
+                <form th:action="@{/usuarios/atualizar-plano}" method="post" class="px-3 py-2">
+                    <input type="hidden" name="plano" value="TRIMESTRAL">
+                    <button type="submit" class="btn btn-sm btn-link text-decoration-none w-100 text-start">
+                        Plano Trimestral (3 meses)
+                    </button>
+                </form>
+            </li>
+            <li>
+                <form th:action="@{/usuarios/atualizar-plano}" method="post" class="px-3 py-2">
+                    <input type="hidden" name="plano" value="ANUAL">
+                    <button type="submit" class="btn btn-sm btn-link text-decoration-none w-100 text-start">
+                        Plano Anual (12 meses)
+                    </button>
+                </form>
+            </li>
+        </ul>
       </div>
 
       <!-- Na página de listagem de diários (diarios.html) -->
@@ -74,11 +129,13 @@
       <div class="row" th:if="${diarios != null && !diarios.empty}">
         <div class="col-md-4 mb-4" th:each="diario : ${diarios}">
           <div class="card h-100">
-            <div
-              class="card-header"
-              th:if="${#strings.contains(diario.class.name, 'DiarioPremium')}"
-            >
-              <span class="badge bg-warning text-dark">Premium</span>
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0" th:text="${diario.nome}">Nome do Diário</h5>
+              <div th:if="${diario instanceof T(com.diario.diariopessoal.model.entity.DiarioPremium)}">
+                <span class="badge bg-warning text-dark">
+                  <i class="bi bi-star-fill me-1"></i> Premium
+                </span>
+              </div>
             </div>
             <div class="card-body">
               <h5 class="card-title" th:text="${diario.nome}">
@@ -118,6 +175,11 @@
           botão "Novo Diário".
         </p>
       </div>
+
+      <p class="mb-0" th:if="${isPremium && usuario instanceof T(com.diario.diariopessoal.model.entity.UsuarioPremium)}">
+        Seu plano: <strong th:text="${usuario.plano} ?: 'TRIMESTRAL'">MENSAL</strong> - 
+        Dias restantes: <strong th:text="${usuario.obterDiasRestantes()} ?: 90">30</strong>
+      </p>
 
       <div class="alert alert-info mt-4">
         <p class="mb-0">

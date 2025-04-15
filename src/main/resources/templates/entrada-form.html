@@ -193,7 +193,7 @@
                 </div>
 
                 <!-- Campos específicos para diários premium -->
-                <div class="card mb-3" th:if="${isPremium}">
+                <div class="card mb-3" th:if="${isPremium != null && isPremium}">
                   <div class="card-header bg-warning text-dark">
                     Opções Premium
                   </div>
@@ -209,12 +209,11 @@
                         onchange="toggleUrlField()"
                       >
                         <option value="TEXTO">Texto</option>
-                        <option
-                          th:each="tipo : ${tiposConteudo}"
-                          th:if="${tipo != T(com.diario.diariopessoal.model.enums.TipoConteudo).TEXTO}"
-                          th:value="${tipo}"
+                        <option 
+                          th:each="tipo : ${tiposConteudo}" 
+                          th:value="${tipo}" 
                           th:text="${tipo}"
-                          th:selected="${isEnriquecida && tipoConteudoSelecionado == tipo}"
+                          th:selected="${isEnriquecida != null && isEnriquecida && tipoConteudoSelecionado != null && tipoConteudoSelecionado == tipo}"
                         >
                           Tipo
                         </option>
@@ -364,7 +363,7 @@
                 </div>
 
                 <!-- Campos específicos para diários premium -->
-                <div class="card mb-3" th:if="${isPremium}">
+                <div class="card mb-3" th:if="${isPremium != null && isPremium}">
                   <div class="card-header bg-warning text-dark">
                     Opções Premium
                   </div>
@@ -380,12 +379,11 @@
                         onchange="toggleUrlField()"
                       >
                         <option value="TEXTO">Texto</option>
-                        <option
-                          th:each="tipo : ${tiposConteudo}"
-                          th:if="${tipo != T(com.diario.diariopessoal.model.enums.TipoConteudo).TEXTO}"
-                          th:value="${tipo}"
+                        <option 
+                          th:each="tipo : ${tiposConteudo}" 
+                          th:value="${tipo}" 
                           th:text="${tipo}"
-                          th:selected="${isEnriquecida && tipoConteudoSelecionado == tipo}"
+                          th:selected="${isEnriquecida != null && isEnriquecida && tipoConteudoSelecionado != null && tipoConteudoSelecionado == tipo}"
                         >
                           Tipo
                         </option>

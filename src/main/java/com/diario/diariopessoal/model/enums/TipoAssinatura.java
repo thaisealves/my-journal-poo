@@ -14,4 +14,13 @@ public enum TipoAssinatura {
     public int getDuracao() {
         return duracao;
     }
+
+    public static TipoAssinatura getPlanoPorDuracao(int meses) {
+        for (TipoAssinatura plano : TipoAssinatura.values()) {
+            if (plano.getDuracao() == meses) {
+                return plano;
+            }
+        }
+        throw new IllegalArgumentException("Nenhum plano encontrado para a duração especificada: " + meses);
+    }
 }

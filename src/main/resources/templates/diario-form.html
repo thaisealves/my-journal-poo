@@ -20,6 +20,16 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/diarios}">Meus Diários</a>
                     </li>
+                    <li class="nav-item" th:if="${!isPremium}">
+                        <a class="nav-link text-warning" th:href="@{/assinatura/mock}">
+                            <i class="bi bi-star-fill"></i> Ativar Premium (Mock)
+                        </a>
+                    </li>
+                    <li class="nav-item" th:if="${isPremium}">
+                        <span class="nav-link text-warning">
+                            <i class="bi bi-star-fill"></i> Premium Ativo
+                        </span>
+                    </li>
                 </ul>
                 <div class="d-flex align-items-center">
                     <span class="navbar-text me-3 text-light">
@@ -59,16 +69,24 @@
                                 <div class="form-text">Descreva o propósito deste diário (opcional).</div>
                             </div>
                             
-                            <!-- Opção de diário premium apenas para usuários premium -->
-                            <div class="mb-3 form-check" th:if="${isPremium}">
-                                <input type="checkbox" class="form-check-input" id="premium" name="premium">
-                                <label class="form-check-label" for="premium">
-                                    Criar como Diário Premium (com recursos avançados)
-                                </label>
+                            <div class="mb-3">
+                                <label for="tipo" class="form-label">Tipo de Diário</label>
+                                <select class="form-select" id="tipo" name="tipo" required>
+                                    <option value="texto">Diário de Texto</option>
+                                    <option value="premium" th:disabled="${!isPremium}" 
+                                            th:attr="title=${!isPremium ? 'Requer assinatura Premium' : ''}">
+                                        Diário Premium (Enriquecido)
+                                    </option>
+                                </select>
+                                <div class="form-text mt-2" th:if="${!isPremium}">
+                                    <p class="text-danger mb-1"><i class="bi bi-exclamation-triangle"></i> Você precisa ser Premium para criar diários enriquecidos.</p>
+                                    <a th:href="@{/assinatura/mock}" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-star-fill"></i> Tornar-me Premium (Modo Acadêmico)
+                                    </a>
+                                </div>
                             </div>
                             
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a th:href="@{/diarios}" class="btn btn-secondary me-md-2">Cancelar</a>
+                            <div class="d-grid mt-4">
                                 <button type="submit" class="btn btn-primary">Criar Diário</button>
                             </div>
                         </form>

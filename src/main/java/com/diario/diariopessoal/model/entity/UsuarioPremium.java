@@ -55,9 +55,17 @@ public class UsuarioPremium extends Usuario {
         return obterDiasRestantes() > 0;
     }
 
+    public void setDataAssinatura(LocalDate dataAssinatura) {
+        this.dataAssinatura = dataAssinatura;
+    }
+    public void setPlano(TipoAssinatura plano) {
+        this.plano = plano;
+    }
+
     // considerar a renovação de acordo com o plano atual, adicionando os dias
     // restantes
-    public void renovarAssinatura(TipoAssinatura novoPlano) {
+    public void renovarAssinatura(int meses) {
+        TipoAssinatura novoPlano = TipoAssinatura.getPlanoPorDuracao(meses);
         int diasRestantes = obterDiasRestantes();
 
         if (diasRestantes > 0) {

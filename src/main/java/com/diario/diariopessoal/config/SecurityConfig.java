@@ -16,64 +16,62 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+        @Autowired
+        private UserDetailsService userDetailsService;
 
-    @Bean
-    public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public static PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                // Desabilitar CSRF (Cross Site Request Forgery)
-                .csrf(csrf -> csrf
-                        // Desabilitar apenas para o console H2
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
-                )
-                .authorizeHttpRequests(authorize -> authorize
-                        // URLs públicas
-                        .requestMatchers("/", "/login", "/usuarios/cadastro", "/usuarios/salvar").permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                        // Permitir acesso ao console H2
-                        .requestMatchers("/h2-console/**").permitAll()
-                        // URLs que requerem autenticação
-                        .anyRequest().authenticated()
-                )
-                // Configurar segurança de cabeçalhos
-                .headers(headers -> headers
-                        // Desabilitar X-Frame-Options para permitir frames no console H2
-                        .frameOptions(frameOptions -> frameOptions.sameOrigin())
-                )
-                // Configurar login customizado
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/diarios", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll()
-                )
-                // Configurar logout
-                .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/login?logout=true")
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .permitAll()
-                )
-                // Tratamento de acesso negado
-                .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedPage("/403")
-                );
-                
-        return http.build();
-    }
-    
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder());
-    }
+        @Bean
+        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+                http
+                                // Desabilitar CSRF (Cross Site Request Forgery)
+                                .csrf(csrf -> csrf
+                                                // Desabilitar apenas para o console H2
+                                                .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
+                                .authorizeHttpRequests(authorize -> authorize
+                                                // URLs públicas
+                                                .requestMatchers("/", "/login", "/usuarios/cadastro",
+                                                                "/usuarios/salvar")
+                                                .permitAll()
+                                                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                                                .requestMatchers("/diarios/**", "/assinatura/**").authenticated()
+
+                                                // Permitir acesso ao console H2
+                                                .requestMatchers("/h2-console/**").permitAll()
+                                                // URLs que requerem autenticação
+                                                .anyRequest().authenticated())
+                                // Configurar segurança de cabeçalhos
+                                .headers(headers -> headers
+                                                // Desabilitar X-Frame-Options para permitir frames no console H2
+                                                .frameOptions(frameOptions -> frameOptions.sameOrigin()))
+                                // Configurar login customizado
+                                .formLogin(form -> form
+                                                .loginPage("/login")
+                                                .loginProcessingUrl("/login")
+                                                .defaultSuccessUrl("/diarios", true)
+                                                .failureUrl("/login?error=true")
+                                                .permitAll())
+                                // Configurar logout
+                                .logout(logout -> logout
+                                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                                .logoutSuccessUrl("/login?logout=true")
+                                                .invalidateHttpSession(true)
+                                                .clearAuthentication(true)
+                                                .permitAll())
+                                // Tratamento de acesso negado
+                                .exceptionHandling(exceptions -> exceptions
+                                                .accessDeniedPage("/403"));
+
+                return http.build();
+        }
+
+        @Autowired
+        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+                auth
+                                .userDetailsService(userDetailsService)
+                                .passwordEncoder(passwordEncoder());
+        }
 }

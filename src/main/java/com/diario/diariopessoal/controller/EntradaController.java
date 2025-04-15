@@ -19,6 +19,8 @@ import com.diario.diariopessoal.repository.UsuarioRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/diarios/{diarioId}/entradas")
@@ -110,13 +112,20 @@ public class EntradaController {
             // Buscar todas as categorias existentes
             List<Categoria> todasCategorias = categoriaRepository.findAll();
 
+            // Filtrar os tipos de conteúdo, excluindo TEXTO se necessário
+            List<TipoConteudo> tiposConteudoFiltrados = Arrays.stream(TipoConteudo.values())
+                .filter(tipo -> tipo != TipoConteudo.TEXTO)  // Filtra TEXTO se necessário
+                .collect(Collectors.toList());
+
             model.addAttribute("diario", diario);
             model.addAttribute("nomeUsuario", usuario.getUsername());
             model.addAttribute("isPremium", diario instanceof DiarioPremium);
             model.addAttribute("humores", Humor.values());
-            model.addAttribute("tiposConteudo", TipoConteudo.values());
+            model.addAttribute("tiposConteudo", tiposConteudoFiltrados);
             model.addAttribute("categorias", todasCategorias);
             model.addAttribute("isEdicao", false);
+            model.addAttribute("isEnriquecida", false); // ou valor apropriado
+            model.addAttribute("tipoConteudoSelecionado", null); // ou valor apropriado
 
             // Para o título da página
             model.addAttribute("titulo", "Nova Entrada");
