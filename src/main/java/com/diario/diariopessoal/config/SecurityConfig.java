@@ -27,27 +27,20 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
-                                // Desabilitar CSRF (Cross Site Request Forgery)
                                 .csrf(csrf -> csrf
                                                 // Desabilitar apenas para o console H2
                                                 .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                                 .authorizeHttpRequests(authorize -> authorize
-                                                // URLs públicas
                                                 .requestMatchers("/", "/login", "/usuarios/cadastro",
                                                                 "/usuarios/salvar")
                                                 .permitAll()
                                                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                                                 .requestMatchers("/diarios/**", "/assinatura/**").authenticated()
 
-                                                // Permitir acesso ao console H2
                                                 .requestMatchers("/h2-console/**").permitAll()
-                                                // URLs que requerem autenticação
                                                 .anyRequest().authenticated())
-                                // Configurar segurança de cabeçalhos
                                 .headers(headers -> headers
-                                                // Desabilitar X-Frame-Options para permitir frames no console H2
                                                 .frameOptions(frameOptions -> frameOptions.sameOrigin()))
-                                // Configurar login customizado
                                 .formLogin(form -> form
                                                 .loginPage("/login")
                                                 .loginProcessingUrl("/login")

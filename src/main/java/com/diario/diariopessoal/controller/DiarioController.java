@@ -43,15 +43,15 @@ public class DiarioController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Usuario usuario = usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-            
+
             // Buscar diários do usuário
             List<DiarioBase> diarios = diarioRepository.findByUsuarioId(usuario.getId());
-            
-            // Adicionar contador de entradas ao modelo
+
+            // Adicionar contador de entradas
             model.addAttribute("totalEntradas", ContadorEntradas.getTotalEntradas());
             model.addAttribute("diarios", diarios);
             model.addAttribute("nomeUsuario", usuario.getUsername());
-            
+
             return "diarios";
         } catch (Exception e) {
             model.addAttribute("erro", "Erro ao listar diários: " + e.getMessage());
@@ -72,7 +72,7 @@ public class DiarioController {
 
             model.addAttribute("diarioDTO", new DiarioCriacaoDTO());
             model.addAttribute("nomeUsuario", usuario.getUsername());
-            
+
             // Verificar se é usuário premium e possui assinatura válida
             boolean isPremium = false;
             if (usuario instanceof UsuarioPremium) {
@@ -92,31 +92,31 @@ public class DiarioController {
      * Processa o formulário para criar um novo diário
      */
     @PostMapping("/novo")
-    public String processarCriacaoDiario(@ModelAttribute DiarioCriacaoDTO diarioDTO, 
-                                         RedirectAttributes redirectAttributes) {
+    public String processarCriacaoDiario(@ModelAttribute DiarioCriacaoDTO diarioDTO,
+            RedirectAttributes redirectAttributes) {
         try {
             // Obter usuário autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             Usuario usuario = usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-            
+
             // Verificar se é diário premium
             if ("premium".equals(diarioDTO.getTipo())) {
                 // Verificar se usuário é premium
                 if (!(usuario instanceof UsuarioPremium)) {
-                    redirectAttributes.addFlashAttribute("erro", 
-                        "É necessário ser um usuário Premium para criar diários enriquecidos");
+                    redirectAttributes.addFlashAttribute("erro",
+                            "É necessário ser um usuário Premium para criar diários enriquecidos");
                     return "redirect:/assinatura/mock";
                 }
-                
+
                 // Verificar se assinatura está ativa
                 UsuarioPremium premium = (UsuarioPremium) usuario;
                 if (!premium.isAssinaturaAtiva()) {
-                    redirectAttributes.addFlashAttribute("erro", 
-                        "Sua assinatura Premium expirou. Por favor, renove para criar diários premium");
+                    redirectAttributes.addFlashAttribute("erro",
+                            "Sua assinatura Premium expirou. Por favor, renove para criar diários premium");
                     return "redirect:/assinatura/mock";
                 }
-                
+
                 // Criar diário premium
                 DiarioPremium diario = new DiarioPremium();
                 diario.setNome(diarioDTO.getNome());
@@ -131,10 +131,10 @@ public class DiarioController {
                 diario.setUsuario(usuario);
                 diarioRepository.save(diario);
             }
-            
+
             redirectAttributes.addFlashAttribute("mensagem", "Diário criado com sucesso!");
             return "redirect:/diarios";
-            
+
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("erro", "Erro ao criar diário: " + e.getMessage());
             return "redirect:/diarios/novo";

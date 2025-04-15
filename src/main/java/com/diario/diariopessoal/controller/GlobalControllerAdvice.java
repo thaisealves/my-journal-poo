@@ -32,15 +32,12 @@ public class GlobalControllerAdvice {
                     model.addAttribute("isPremium", isPremium);
                     model.addAttribute("usuario", usuario);
                 } else {
-                    // Valores padrão
                     model.addAttribute("isPremium", false);
                 }
             } else {
-                // Valores padrão para usuários não autenticados
                 model.addAttribute("isPremium", false);
             }
         } catch (Exception e) {
-            // Em caso de erro, defina valores padrão
             model.addAttribute("isPremium", false);
         }
     }

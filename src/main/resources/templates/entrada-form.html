@@ -6,7 +6,6 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Corrigir este título -->
     <title th:text="${titulo}">Nova Entrada</title>
 
     <link
@@ -62,7 +61,6 @@
             <div
               class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
             >
-              <!-- Corrigir este título -->
               <h2
                 class="mb-0"
                 th:text="${isEdicao ? 'Editar Entrada' : 'Nova Entrada'}"
@@ -79,13 +77,11 @@
                 Erro ao salvar entrada
               </div>
 
-              <!-- Modifique o formulário para não usar th:field -->
               <form
                 th:if="${isEdicao}"
                 th:action="@{/diarios/{diarioId}/entradas/{entradaId}/editar(diarioId=${diario.id},entradaId=${entrada.id})}"
                 method="post"
               >
-                <!-- campos do formulário -->
                 <div class="mb-3">
                   <label for="titulo" class="form-label">Título</label>
                   <input
@@ -132,7 +128,6 @@
                   </div>
                 </div>
 
-                <!-- Nova seção para categorias -->
                 <div class="card mb-3">
                   <div class="card-header bg-light">
                     Informações da Categoria
@@ -243,7 +238,6 @@
                   </div>
                 </div>
 
-                <!-- Mantenha os botões existentes -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                   <a
                     th:href="@{/diarios/{id}/entradas(id=${diario.id})}"
@@ -302,7 +296,6 @@
                   </div>
                 </div>
 
-                <!-- Nova seção para categorias -->
                 <div class="card mb-3">
                   <div class="card-header bg-light">
                     Informações da Categoria
@@ -413,7 +406,6 @@
                   </div>
                 </div>
 
-                <!-- Mantenha os botões existentes -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                   <a
                     th:href="@{/diarios/{id}/entradas(id=${diario.id})}"

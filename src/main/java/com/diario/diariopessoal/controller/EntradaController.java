@@ -124,10 +124,8 @@ public class EntradaController {
             model.addAttribute("tiposConteudo", tiposConteudoFiltrados);
             model.addAttribute("categorias", todasCategorias);
             model.addAttribute("isEdicao", false);
-            model.addAttribute("isEnriquecida", false); // ou valor apropriado
-            model.addAttribute("tipoConteudoSelecionado", null); // ou valor apropriado
-
-            // Para o título da página
+            model.addAttribute("isEnriquecida", false); 
+            model.addAttribute("tipoConteudoSelecionado", null); 
             model.addAttribute("titulo", "Nova Entrada");
 
             return "entrada-form";
@@ -176,7 +174,7 @@ public class EntradaController {
                 Optional<Categoria> categoriaExistente = categoriaRepository.findByNome(categoriaNome.trim());
 
                 if (categoriaExistente.isPresent()) {
-                    // Se a categoria já existir, use-a
+                    // Se a categoria já existir, usa
                     categoria = categoriaExistente.get();
                 } else {
                     // Se não existir, crie uma nova com os parâmetros fornecidos
@@ -282,7 +280,7 @@ public class EntradaController {
                 throw new RuntimeException("Entrada não encontrada");
             }
 
-            // Determinar se a entrada é enriquecida (para exibição adequada no template)
+            // Determinar se a entrada é enriquecida 
             boolean isEnriquecida = entrada instanceof EntradaEnriquecida;
 
             model.addAttribute("diario", diario);
@@ -508,11 +506,9 @@ public class EntradaController {
             entrada.setCategoria(categoria);
             entrada.setHumor(humor);
 
-            // Se for entrada enriquecida, atualizar campos específicos
             if (entrada instanceof EntradaEnriquecida && tipoConteudo != null) {
                 EntradaEnriquecida entradaEnriquecida = (EntradaEnriquecida) entrada;
 
-                // Para conteúdo não-texto, a URL é obrigatória
                 if (!TipoConteudo.TEXTO.equals(tipoConteudo) && (urlConteudo == null || urlConteudo.trim().isEmpty())) {
                     throw new RuntimeException("URL do conteúdo é obrigatória para entradas multimídia");
                 }
@@ -521,7 +517,6 @@ public class EntradaController {
                 entradaEnriquecida.setUrlConteudo(urlConteudo);
             }
 
-            // Salvar as alterações
             diarioRepository.save(diario);
 
             redirectAttributes.addFlashAttribute("mensagem", "Entrada atualizada com sucesso!");

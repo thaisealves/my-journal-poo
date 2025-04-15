@@ -114,7 +114,6 @@
         </ul>
       </div>
 
-      <!-- Na página de listagem de diários (diarios.html) -->
       <div class="alert alert-info mb-4">
         <div class="d-flex align-items-center">
           <i class="bi bi-info-circle-fill me-2 fs-4"></i>
@@ -125,7 +124,6 @@
         </div>
       </div>
 
-      <!-- Lista de diários dinâmica -->
       <div class="row" th:if="${diarios != null && !diarios.empty}">
         <div class="col-md-4 mb-4" th:each="diario : ${diarios}">
           <div class="card h-100">

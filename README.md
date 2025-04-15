@@ -16,7 +16,7 @@ Diário Pessoal é um sistema de gerenciamento de diários que permite aos usuá
 
 ### Diagrama de Classes UML
 
-[ESPAÇO RESERVADO PARA A IMAGEM DO DIAGRAMA]
+![Diagrama de Classes UML](src/main/resources/static/images/diagrama-uml.png)
 
 [LINK DO DIAGRAMA UML](https://www.plantuml.com/plantuml/png/pLXVRzis47_tfz2oXoPj4hJRcr44LMqr4nR_WIqFmuQXk4XCIamIFP8ArXRzCCCUXkrhv8kDyabdqgATQ7-0vY6Mxeu_tl5-ToJrIccGkYhomHVw7IjOK81K0_KpBzSWeGZI79GAjPRykj8iJaMvv1zOy7mmU1B4fMRo1bAc1hnz3EPCAguqCuBWuo0mVyzkcOwpuvDXS2NAMnIfZOXdA3EgEy6pmQU11JJc8BbOCdd7Ku9IaD-1Z4ej8ODZXh_3e14qE6YQ6o_8L6scDvANZU02ZQuhbPBHN4Z7gKQCbh26MxBqUVua6DLhnLG0ryfOQL03V4erBcFj9iyWOwz1iO0NwvmL9WJbMRClsmdmBJDe8yaX1L6BKyZ7e5d22zPlXSbwl0N4OHt8Zwtldu8xo8tRiZQy5Y9dK9fuTsF3T9d8A8HI56mOBBNa50PJgUHcJbTSgSgCDS8LFg03My3Zaux4nZuD75mKxM8YX1NKCyXuoaMvpQdXjcPLHY2xQpOLXN45jRJAA7RywQnrwrrdiArpOl31O20rYBjEQglg1ErZfmapbQncfvsuXFsgHM3-iJ9hPJiqzLRa6MiAp5jU5hQJH1Ivg-PNzqzopymUiAPvKj3iLaWEms3KFluN6AV1kweGSXXyK_yGegVH_LyjBfYjTUruJeCUr-qSximbAtXL_1lsHANalrGivOUOH3CvN2BXPqsNqq3pjHYHRMAz6SzaFkepAIsNPnCaNI-oqAX7ygOxx374UMJ3wh7N4nTRER7Gsco9RhkvGgalNwY1IWj9tg7CBbbqj7NnX5xzD3giFWtSsNgQx-bIj7sq_EfkGgHwS0Sas1g4NhOufFQwiWCMrkxxTZDKkD7j3ZQhZuEjDAXMlBUf-WyoH1-7qCGaKhKasb_8gFSKCoge9Kruni7H4JDVyn8hulgzPZ_-X7vxglx4h_4IfM_dQHQBINvZl9MO0cgptPfrKuFuH3PdFagKOxJVlyuPIEO7U6nhkt7vpsMKZWvUny2VlawDk8aqi4ugLTTYJ-eVOkxXSg7coCggSDQqeN4IVP_CDazNyVJRj_4al8mcs_Vlud5agSFLEBPUnxFHQX9D6u3HR9f4g_7iRJHvlKhYyQoT5qkmcV1DT1N_W5ClucKIRHx3wJAUBH4cdYxdyI8SuziqMYMBHh5On4ahlro4oOpAbjhBuRvFHuDkBUwMeNHfOBMyNS43vusJp-NYC1Ao0u1IAzf7iUsZqg1v-Yam4uAabPX39j594b62MaOUJ4-bc2nXDqMi09wx8iNATx2JI5x3juV6xT7p0jLh9czgbFdcrzbgw4Bblf8pb5fqX5x92JVBAnpdPXfLKGtWaQDJHk5pJv7U6uF_V8Zn7-EY3AsJU8TRk6ncxkx28MIkcGIvDC7MLB-3pTD8yhKMjn9k88D7SgV31VU-GEAM3Hbe29NY9UXAWlLneibe3cMpJMojA8NEBS4dxP5VVFNEjqtxsF7M-PYopNCDOLHUfyMrPdNUr88f3QLccwJmKgEQg-s0KFCxw5IbP7LwfEM4UHTpdzjEfZP5tEiAPOOxzeJJlPWSlXZzuxF9WPi7dLUwwzNT3BSs3UlCRhOChuvVdBGxr2HQ9WiZ-HebuNHLgxywQJXgHgOWh3ovgCUsWKKMbBO9fiAuP9ALAOTCD0bHBnFFTVh2EEislGciNxPBcLpucu6RrBOr90uN92l47QCH1pOblqbYtp5tUqjouNw1gZJFkRx_JVATZr1l8DL2lc-YfDs6c4fVXZndK4lj7zt_kr9l-0D7PCVWOOJUBlQO0YGSk7zlsRQbPrs5a0dwUD19a1OQybQBt7ODU9aQlvY18H2gIzSoOsJPJhl7KZB5DFYrU1EnlQAQmoxWRgPDG8leSdKLBZRFyqKqYLSJPEuYkWf7yMmQRWwzovhBebWBnU__kFzT3EnFg4SlZeAdPsV1qTCZkZWEWxeNtlzP39mS7RQjvmrl9Ri5dAGrE7f-Vcx62JCE7wqpy91Qx0V8X44gn013HCS4JcObsGmnSQYA4pxPcLyylmzDArfBfXHiV59Af7pNAGDwTdQn6THEECGl58DkmwvDtNkXkqUZtjqhBPVzawsPrAnCMG0KiZ5oyrpxFsPhLcRtVzNzTk3sdVFp2xlGw-MKUut8szRibO6jYlnl)
 
@@ -226,7 +226,7 @@ public void adicionarEntrada(String titulo, String conteudo, Categoria categoria
 }
 ```
 
-### 🔧 Tecnologias Utilizadas
+## 🔧 Tecnologias Utilizadas
 
 - Java 17
 - Spring Boot
@@ -237,7 +237,7 @@ public void adicionarEntrada(String titulo, String conteudo, Categoria categoria
 - Bootstrap 5
   Maven
 
-### 🔒 Segurança
+## 🔒 Segurança
 
 O sistema implementa mecanismos de segurança para proteger os dados dos usuários:
 
@@ -246,9 +246,9 @@ O sistema implementa mecanismos de segurança para proteger os dados dos usuári
 - Validação de entrada de dados
 - Verificação de autorização para recursos premium
 
-### 📊 Modelo de Negócio
+## 📊 Modelo de Negócio
 
-#### Tipos de Usuários
+### Tipos de Usuários
 
 1. Usuários Regulares
 
@@ -264,7 +264,7 @@ O sistema implementa mecanismos de segurança para proteger os dados dos usuári
 - Links externos
 - Planos de assinatura: Mensal, Trimestral e Anual
 
-### 🚀 Como Executar o Projeto
+## 🚀 Como Executar o Projeto
 
 1. Clone o repositório
 2. Navegue até o diretório do projeto

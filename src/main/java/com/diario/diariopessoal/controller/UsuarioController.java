@@ -102,7 +102,6 @@ public class UsuarioController {
             }
             diarioRepository.saveAll(diarios);
             
-            // Limpar contexto de segurança
             SecurityContextHolder.clearContext();
             
             redirectAttributes.addFlashAttribute("mensagem", 
